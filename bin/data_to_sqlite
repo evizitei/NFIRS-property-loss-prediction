@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import dataset
+from dbfread import DBF
+
+db = dataset.connect('sqlite:///./sqlite/incidents.sqlite')
+basic_table = db['basic_incidents']
+fire_table = db['fire_incidents']
+incidents_dbf = DBF('data/basicincident.dbf')
+
+for record in incidents_dbf:
+  basic_table.insert(record)
+
+for record in fire_dbf:
+  fire_table.insert(record)
