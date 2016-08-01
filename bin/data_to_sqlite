@@ -7,9 +7,18 @@ db = dataset.connect('sqlite:///./sqlite/incidents.sqlite')
 basic_table = db['basic_incidents']
 fire_table = db['fire_incidents']
 incidents_dbf = DBF('data/basicincident.dbf')
+fire_dbf = DBF('data/fireincident.dbf')
 
+set = "basic"
+i = 0
 for record in incidents_dbf:
   basic_table.insert(record)
+  i += 1
+  print set + "" + str(i)
 
+set = "fire"
+i = 0
 for record in fire_dbf:
   fire_table.insert(record)
+  i += 1
+  print set + "" + str(i)

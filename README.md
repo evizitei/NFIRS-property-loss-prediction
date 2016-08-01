@@ -91,4 +91,6 @@ helper script for doing this (make sure your sqlite folder exists):
 
 it will take some time to run, since there are a few
 million basic incidents and 600k fire incidents,
-and it's processing them iteratively.
+and it's processing them iteratively.  This takes
+on the order of 3 hours, and so the final dataset
+will be provided as a google drive file here:
