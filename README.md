@@ -133,3 +133,26 @@ fire_table.find_one()
 # find by column values:
 basic_table.find(FDID=u'11100', INC_NO=u'391')
 ```
+
+Although there are 2.3 million incidents in the basic incident file,
+many of them are non-fire incidents, and for the purposes of
+this process we really only care about the ones that are in the
+fire incidents file.  This next transformation reads in the sqlite
+database that has all the incidents and produces a single joined table
+that has only entries for fire incidents.
+
+`./bin/join_incidents_to_one_table`
+
+There are > 670k records to build here, and it can do
+about 50/second, so this operation can take about 4 hours.
+
+This data is now in one-record-per-fire, which is easier
+to explore for feature exploration and extraction.
+
+```
+import dataset
+
+db = dataset.connect('sqlite:///./sqlite/fire_incidents.sqlite')
+table = db['incidents']
+table.find_one()
+```

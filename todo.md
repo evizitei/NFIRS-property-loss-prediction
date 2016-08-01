@@ -11,7 +11,7 @@
 [x] update sqlite script to skip steps if sqlite files already exist
 [x] provide code lookups from code DBF file for reference
 [ ] write data exploration section in project_report.md
-[ ] produce joined dataset of just incidents that are in both the fire incident file and the basic incident file
+[x] produce joined dataset of just incidents that are in both the fire incident file and the basic incident file
 [ ] produce series of scatter plots tying suspect features to property loss
 [ ] make a list of chosen features to train the model on
 [ ] normalize features appropriately (1-hot encoding in some cases, scaling in others)

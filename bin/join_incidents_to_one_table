@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import dataset
+from collections import OrderedDict
+
+if not os.path.isfile("./sqlite/fire_incidents.sqlite"):
+    if not os.path.isfile("./sqlite/incidents.sqlite"):
+        print "Oops, incidents sqlite file doesn't exist, run \"data_to_sqlite\" script"
+        sys.exit()
+
+    print "fire incidents file missing, creating from all incidents..."
+    all_db = dataset.connect('sqlite:///./sqlite/incidents.sqlite')
+    fire_db = dataset.connect('sqlite:///./sqlite/fire_incidents.sqlite')
+    basic_input_table = all_db['basic_incidents']
+    fire_input_table = all_db['fire_incidents']
+
+    output_table = fire_db['incidents']
+
+    set = "join-to-just-fire "
+    i = 0
+    for fire_rec in fire_input_table:
+      basic_rec = basic_input_table.find_one(FDID=fire_rec['FDID'],INC_NO=fire_rec['INC_NO'])
+      joined_rec = OrderedDict()
+      joined_rec.update(basic_rec)
+      joined_rec.update(fire_rec)
+      del(joined_rec['id']) # don't want to keep the old id
+      output_table.insert(joined_rec)
+      i += 1
+      print set + "" + str(i)
+else:
+    print "fire incidents file already exists"
+
+print "Done!"
