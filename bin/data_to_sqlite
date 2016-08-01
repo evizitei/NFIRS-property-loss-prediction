@@ -28,4 +28,16 @@ if not os.path.isfile("./sqlite/incidents.sqlite"):
 else:
     print "SQLITE file already exists"
 
+print "ensuring indexes..."
+# don't worry, index creation is idempotent
+db = dataset.connect('sqlite:///./sqlite/incidents.sqlite')
+basic_table = db['basic_incidents']
+fire_table = db['fire_incidents']
+
+basic_table.create_index(['id'], name="basic_pk_index")
+basic_table.create_index(['FDID', 'INC_NO'], name="basic_incident_idx")
+
+fire_table.create_index(['id'], name="fire_pk_index")
+fire_table.create_index(['FDID', 'INC_NO'], name="fire_incident_idx")
+
 print "Done!"

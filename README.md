@@ -84,8 +84,9 @@ OrderedDict([
 They use numerical codes a lot here so the data is going to need
 some cleaning.  Additionally, it's hard to explore
 in dbf format, so it seems worth shoving the relevant files
- into sqlite tables for easier querying. There's a useful
-helper script for doing this (make sure your sqlite folder exists):
+ into sqlite tables with indexes for easier querying.
+There's a useful helper script for doing this
+(make sure your sqlite folder exists):
 
 `./bin/data_to_sqlite`
 
@@ -94,3 +95,22 @@ million basic incidents and 600k fire incidents,
 and it's processing them iteratively.  This takes
 on the order of 3 hours, and so the final dataset
 will be provided as a google drive file here:
+
+*_include file link at some point_*
+
+exploring the data in a sql database is a little easier:
+
+```
+import dataset
+
+db = dataset.connect('sqlite:///./sqlite/incidents.sqlite')
+basic_table = db['basic_incidents']
+fire_table = db['fire_incidents']
+
+# return one row from each table
+basic_table.find_one()
+fire_table.find_one()
+
+# find by column values:
+basic_table.find(FDID=u'11100', INC_NO=u'391')
+```

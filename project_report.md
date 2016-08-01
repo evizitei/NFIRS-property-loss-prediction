@@ -52,14 +52,51 @@ the NFIRS database.
 - _Has an overview of the project been provided, such as the problem domain, project origin, and related datasets or input data?_
 - _Has enough background information been given so that an uninformed reader would understand the problem domain and following problem statement?_
 
-### Problem Statement
-In this section, you will want to clearly define the problem that you are trying to solve, including the strategy (outline of tasks) you will use to achieve the desired solution. You should also thoroughly discuss what the intended solution will be for this problem. Questions to ask yourself when writing this section:
+### Intended Approach
+
+For this project I will be taking the raw dbase files for the 2011
+NFIRS data.  The dataset is very big (2.2 million basic records)
+and we don't actually need all of it as some of those incidents
+are not fires (Medical, hazmat, search and rescue, etc).
+
+I intend to reduce the set of data under consideration to just
+structural fire incidents, and extract/normalize just the features
+that are relevant to predicting property loss.  Then I intend
+to use the tensorflow framework to train a regression model
+such that given a set of features for a target structure/incident,
+we can make a reasonable prediction of likely real property loss.
+
+*Possible Example Usecase:*
+  A dispatch center receives a 911 call reporting a single-room fire
+  inside a residential single-family dwelling at a given address.  
+  That address is used by supporting software systems to query
+  dimensions of the structure.  Questions from the dispatcher are used
+  to establish what materials are on site and what the expected
+  ignition source was, whether a fire detector has sounded, etc
+  (standard questions currently asked in 911 calls during dispatch).  
+  The data is fed into the model and produces an expected dollar value
+  of $237,500.00 property loss from this incident.  Based on the
+  unexpectedly high property loss estimate, a second alarm (
+  extra fire trucks and personnel) are immediately dispatched rather
+  than waiting for the first engine to arrive and size up the scene.
+
 - _Is the problem statement clearly defined? Will the reader understand what you are expecting to solve?_
 - _Have you thoroughly discussed how you will attempt to solve the problem?_
 - _Is an anticipated solution clearly defined? Will the reader understand what results you are looking for?_
 
-### Metrics
-In this section, you will need to clearly define the metrics or calculations you will use to measure performance of a model or result in your project. These calculations and metrics should be justified based on the characteristics of the problem and problem domain. Questions to ask yourself when writing this section:
+### Cost function and Validation
+
+To train the algorithm, I'll be using Mean Squared Error as
+the cost function and trying to minimize it to find the regression
+of best fit.  In layman's terms, this is taking the sum of the
+squared differences between each real y value and the predicted y value
+for the current function, divided by the number of elements (the
+average of the squared error in prediction).  This is formally
+written as:
+
+  ![MSE][https://wikimedia.org/api/rest_v1/media/math/render/svg/67b9ac7353c6a2710e35180238efe54faf4d9c15]
+
+Questions to ask yourself when writing this section:
 - _Are the metrics you’ve chosen to measure the performance of your models clearly discussed and defined?_
 - _Have you provided reasonable justification for the metrics chosen based on the problem and solution?_
 
@@ -68,6 +105,9 @@ In this section, you will need to clearly define the metrics or calculations you
 _(approx. 2-4 pages)_
 
 ### Data Exploration
+
+The NFIRS data arrives.
+
 In this section, you will be expected to analyze the data you are using for the problem. This data can either be in the form of a dataset (or datasets), input data (or input files), or even an environment. The type of data should be thoroughly described and, if possible, have basic statistics and information presented (such as discussion of input features or defining characteristics about the input or environment). Any abnormalities or interesting qualities about the data that may need to be addressed have been identified (such as features that need to be transformed or the possibility of outliers). Questions to ask yourself when writing this section:
 - _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
 - _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
