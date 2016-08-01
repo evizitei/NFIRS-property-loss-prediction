@@ -8,4 +8,4 @@
 [x] write introduction and explanation of firefighting dataset
 [ ] figure out how fire incidents and basic incidents are linked
 [ ] get indexes on sqlite tables to make them easier to query quickly
-[ ] update sqlite script to skip steps if sqlite files already exist
+[x] update sqlite script to skip steps if sqlite files already exist
