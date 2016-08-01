@@ -9,7 +9,7 @@
 [x] figure out how fire incidents and basic incidents are linked (fd ids and incident numbers)
 [x] get indexes on sqlite tables to make them easier to query quickly
 [x] update sqlite script to skip steps if sqlite files already exist
-[ ] provide code lookups from code DBF file for reference
+[x] provide code lookups from code DBF file for reference
 [ ] write data exploration section in project_report.md
 [ ] produce joined dataset of just incidents that are in both the fire incident file and the basic incident file
 [ ] produce series of scatter plots tying suspect features to property loss

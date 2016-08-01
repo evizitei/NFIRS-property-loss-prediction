@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import os
+from dbfread import DBF
+import csv
+
+if not os.path.isfile("./data/lookup.csv"):
+    print "creating lookup CSV..."
+    lookup_table = DBF('data/codelookup.DBF')
+
+    set = "lookup"
+    i = 0
+    with open('data/lookup.csv', 'wb') as csvfile:
+      lookup_writer = csv.writer(csvfile)
+      lookup_writer.writerow(lookup_table.field_names)
+      for record in lookup_table:
+        lookup_writer.writerow(list(record.values()))
+        i += 1
+        print set + "" + str(i)
+else:
+    print "Lookup CSV already exists"
+
+print "Done!"

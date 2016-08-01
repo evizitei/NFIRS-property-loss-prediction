@@ -82,7 +82,26 @@ OrderedDict([
 ```
 
 They use numerical codes a lot here so the data is going to need
-some cleaning.  Additionally, it's hard to explore
+some cleaning. Some of the codes can be found in "codelookup.DBF".
+
+```
+from dbfread import DBF
+lookup_table = DBF('data/codelookup.DBF')
+len(lookup_table) # -> 6,619
+
+for record in lookup_table:
+    print(record)
+```
+
+It's useful to have this data in csv format for easy reference, and
+it's only 6.6k lines or so. There's a script in the bin folder
+that can do this for you, and it runs in less than a second:
+
+`./bin/build_lookup_csv`
+
+
+
+ Additionally, it's hard to explore
 in dbf format, so it seems worth shoving the relevant files
  into sqlite tables with indexes for easier querying.
 There's a useful helper script for doing this
