@@ -1,0 +1,275 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import dataset
+from collections import OrderedDict
+from datetime import datetime
+
+def should_include(rec):
+    inc_type_value = rec["INC_TYPE"]
+    if inc_type_value is None or inc_type_value[0] != "1":
+        return False
+    if int(rec["PROP_LOSS"]) > 60000:
+        # removes top 10% of loss values, they skew heavily
+        return False
+    return True
+
+def normalize_ts(ts):
+    string = str(ts)
+    if len(string) == 11:
+        string = "0" + string
+    return string
+
+def map_ts_to_hour(ts):
+    return int(normalize_ts(ts)[8:10])
+
+def map_ts_to_month(ts):
+    return int(normalize_ts(ts)[0:2])
+
+def map_ts_to_year(ts):
+    return int(normalize_ts(ts)[4:8])
+
+def map_ts_to_day_of_month(ts):
+    return int(normalize_ts(ts)[2:4])
+
+def map_ts_to_hour(ts):
+    return int(normalize_ts(ts)[8:10])
+
+def map_ts_to_minute(ts):
+    return int(normalize_ts(ts)[10:12])
+
+def ts_to_dt(ts):
+    return datetime(map_ts_to_year(ts), map_ts_to_month(ts), map_ts_to_day_of_month(ts),
+             map_ts_to_hour(ts), map_ts_to_minute(ts))
+
+expensive_loss_states = ["AK", "AR", "IL", "IN", "KY", "MN", "MS", "NY", "PA", "TN", "WV"]
+cheap_loss_states = ["DE", "HI", "ME","NV"]
+
+def state_expense_level(state):
+    if state in expensive_loss_states:
+        return 2
+    if state in cheap_loss_states:
+        return 0
+    return 1
+
+def map_inc_type(input_type):
+    leader = int(str(input_type)[0:2])
+    if leader in [11, 12, 13, 14, 15, 17]:
+        return leader
+    else:
+        return 10 # other categories are similarly low damage
+
+def aid_level(input_aid):
+    if input_aid == "N":
+        return 0
+    aid_int = int(input_aid)
+    if aid_int in [1,3]:
+        return 1
+    if aid_int in [2,4]:
+        return 2
+    return 3
+
+def hour_group(alarm):
+    hour = map_ts_to_hour(alarm)
+    if hour > 6 and hour <= 14:
+        return 0 # morning
+    if hour > 17 and hour <= 22:
+        return 0 # evening, same as morn
+    if hour > 14 and hour <= 17:
+        return 1 # afternoon
+    if hour <= 5 or hour >= 23:
+        return 3 # overnigh
+    return 0
+
+def controlled_time(alarm, controlled):
+    try:
+        return (ts_to_dt(controlled) - ts_to_dt(alarm)).seconds
+    except ValueError:
+        return 0
+
+def detector_flag(det_state):
+    if det_state == "2":
+        return 1
+    return 0
+
+def hazmat_group(hazrel):
+    if hazrel is None or hazrel in ["N", ""]:
+        return 0
+    val = int(hazrel)
+    if val in [1,4,7]:
+        return 1
+    if val in [2,3]:
+        return 2
+    if val in [6,8]:
+        return 3
+    if val == 5:
+        return 4
+    return 0
+
+def mixed_use_group(mu):
+    if mu is None or mu in ["", "00", "NN"]:
+        return 0
+    if mu in ["33", "63"]:
+        return 1
+    if mu in ["10", "20", "51", "53"]:
+        return 2
+    if mu in ["58", "59", "60"]:
+        return 3
+    if mu in ["40", "65"]:
+        return 4
+    return 0
+
+def property_use_group(pu):
+    if pu is None or pu in ["NNN", "UUU"]:
+        return 0
+    if pu in ["2", "3","9"]:
+        return 1
+    if pu in ["0", "1", "5"]:
+        return 2
+    if pu in ["7", "8"]:
+        return 3
+    if pu in ["4", "6"]:
+        return 4
+    return 0
+
+def area_origin_group(ao):
+    if ao is None or ao in ["UU", "uu", ""]:
+        return 0
+    if ao in ["8", "9"]:
+        return 1
+    if ao in ["0","3","5", "6"]:
+        return 2
+    if ao in ["2", "4", "7"]:
+        return 3
+    if ao in ["1"]:
+        return 4
+    return 0
+
+def heat_source_group(hs):
+    if hs is None or hs in ["UU", "uu", ""]:
+        return 0
+    if hs in ["0","1","4","5","6"]:
+        return 1
+    if hs in ["7","8","9"]:
+        return 2
+    return 0
+
+def ignition_group(ci):
+    if ci is None or ci in ["","U","u"]:
+        return 0
+    if ci in ["1","2","3"]:
+        return 1
+    if ci in ["4"]:
+        return 2
+    if ci in ["0", "5"]:
+        return 3
+
+def fire_spread_group(fs):
+    if fs is None or fs == "":
+        return 0
+    return int(fs)
+
+def structure_type_group(st):
+    if st is None or st in [""]:
+        return 0
+    val = int(st)
+    if val in [5,6]:
+        return 1
+    if val in [7,8]:
+        return 2
+    if val in [3]:
+        return 3
+    if val in [0,2,4]:
+        return 4
+    if val in [1]:
+        return 5
+    return 0
+
+def structure_status_group(ss):
+    if ss is None or ss in ["", "U"]:
+        return 0
+    val = int(ss)
+    if val in [0,3,7]:
+        return 1
+    if val in [2]:
+        return 2
+    if val in [1,4,6]:
+        return 3
+    if val in [5]:
+        return 4
+    return 0
+
+def aes_system_group(aes):
+    if aes is None or aes in ["", "U"]:
+        return 0
+    if aes in ["N"]:
+        return 1
+    if aes in ["1"]:
+        return 2
+    if aes in ["2"]:
+        return 3
+    return 0
+
+def intfix(val):
+    if val is None:
+        return -1
+    return int(val)
+
+
+if not os.path.isfile("./sqlite/useful_incidents.sqlite"):
+    if not os.path.isfile("./sqlite/fire_incidents.sqlite"):
+        print "Oops, fire incidents sqlite file doesn't exist, run \"join_incidents_to_one_table\" script"
+        sys.exit()
+
+    print "useful incidents file missing, creating from fire incidents..."
+    fire_db = dataset.connect('sqlite:///./sqlite/fire_incidents.sqlite')
+    useful_db = dataset.connect('sqlite:///./sqlite/useful_incidents.sqlite')
+
+    input_table = fire_db['incidents']
+    output_table = useful_db['incidents']
+
+    set = "reduce-to-useful"
+    i = 0
+    # about 215k
+    useful_records = fire_db.query("""SELECT * from incidents
+      WHERE PROP_LOSS IS NOT NULL
+        AND PROP_LOSS > 0""")
+
+    for fire_rec in useful_records:
+      if should_include(fire_rec):
+          useful_rec = OrderedDict()
+
+          useful_rec["PROP_LOSS"] = intfix(fire_rec["PROP_LOSS"])
+          useful_rec["STATE_EXPENSE"] = state_expense_level(fire_rec["STATE"])
+          useful_rec["INC_TYPE"] = map_inc_type(fire_rec["INC_TYPE"])
+          useful_rec["AID"] = aid_level(fire_rec["AID"])
+          useful_rec["HOUR_GROUP"] = hour_group(fire_rec["ALARM"])
+          useful_rec["CONTROLLED_TIME"] = controlled_time(fire_rec["ALARM"], fire_rec["INC_CONT"])
+          useful_rec["CLEAR_TIME"] = controlled_time(fire_rec["ALARM"], fire_rec["LU_CLEAR"])
+          useful_rec["SUPPRESSION_APPARATUS"] = intfix(fire_rec["SUP_APP"])
+          useful_rec["SUPPRESSION_PERSONNEL"] = intfix(fire_rec["SUP_PER"])
+          useful_rec["PROP_VALUE"] = intfix(fire_rec["PROP_VAL"])
+          useful_rec["DETECTOR_FLAG"] = detector_flag(fire_rec["DET_ALERT"])
+          useful_rec["HAZMAT_RELEASE"] = hazmat_group(fire_rec["HAZ_REL"])
+          useful_rec["MIXED_USE"] = mixed_use_group(fire_rec["MIXED_USE"])
+          useful_rec["PROPERTY_USE"] = property_use_group(fire_rec["PROP_USE"])
+          useful_rec["NOT_RESIDENTIAL"] = property_use_group(fire_rec["NOT_RES"])
+          useful_rec["AREA_ORIGIN"] = area_origin_group(fire_rec["AREA_ORIG"])
+          useful_rec["HEAT_SOURCE"] = heat_source_group(fire_rec["HEAT_SOURC"])
+          useful_rec["IGNITION"] = ignition_group(fire_rec["CAUSE_IGN"])
+          useful_rec["FIRE_SPREAD"] = fire_spread_group(fire_rec["FIRE_SPRD"])
+          useful_rec["STRUCTURE_TYPE"] = structure_type_group(fire_rec["STRUC_TYPE"])
+          useful_rec["STRUCTURE_STATUS"] = structure_status_group(fire_rec["STRUC_STAT"])
+          useful_rec["SQUARE_FEET"] = intfix(fire_rec["TOT_SQ_FT"])
+          useful_rec["AES_SYSTEM"] = aes_system_group(fire_rec["AES_PRES"])
+
+          output_table.insert(useful_rec)
+      else:
+          print "skipping " + str(fire_rec["id"]) + "..."
+      i += 1
+      print set + "" + str(i)
+else:
+    print "useful incidents file already exists"
+
+print "Done!"

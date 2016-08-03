@@ -156,3 +156,24 @@ db = dataset.connect('sqlite:///./sqlite/fire_incidents.sqlite')
 table = db['incidents']
 table.find_one()
 ```
+
+In the FeatureExploration notebook you can find some analysis of which features
+were selected for learning and why.  Then there is another script
+that reads in the joined fire records and produces a "useful" dataset
+that has only records with property losses > 0 and only the features
+I believe to be useful.  There are about 215k records to scan through that
+meet this criteria (though some are skipped for other reasons).  The script
+iterates through about 500 records per second, so that's about a 7-8 minute runtime.
+
+`./bin/reduce_to_useful_inputs`
+
+This produces a much smaller and manageable set of data, 8.9MB for the
+final sqlite file.  Here we can count the rows in it:
+
+```
+import dataset
+db = dataset.connect('sqlite:///./sqlite/useful_incidents.sqlite')
+table = db['incidents']
+len(table)
+# -> 196,574
+```

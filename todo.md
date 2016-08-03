@@ -15,4 +15,7 @@
 [x] produce series of scatter plots tying suspect features to property loss
 [x] make a list of chosen features to train the model on
 [ ] normalize features appropriately (1-hot encoding in some cases, scaling in others)
-[ ] produce smaller dataset containing just features we care about for just relevant incidents
+[x] produce smaller dataset containing just features we care about for just relevant incidents
+[ ] split off a test set that will not be used during validation tests,
+so that validation information doesn't bleed back into the model and overfit.
+[ ] spot check a series of common algorithms to see which approaches might be useful
