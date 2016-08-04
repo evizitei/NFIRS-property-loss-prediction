@@ -14,7 +14,10 @@
 [x] produce joined dataset of just incidents that are in both the fire incident file and the basic incident file
 [x] produce series of scatter plots tying suspect features to property loss
 [x] make a list of chosen features to train the model on
-[ ] normalize features appropriately (1-hot encoding in some cases, scaling in others)
+[x] fill in missing values with median values for numeric fields
+[x] remove outliers from numeric fields
+[ ] use feature scaling on numeric fields
+[ ] switch all categories into 1-hot encoded vectors
 [x] produce smaller dataset containing just features we care about for just relevant incidents
 [ ] split off a test set that will not be used during validation tests,
 so that validation information doesn't bleed back into the model and overfit.

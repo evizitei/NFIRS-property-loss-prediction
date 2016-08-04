@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import dataset
+from collections import OrderedDict
+
+def fix_val(rec, field, median):
+    if rec[field] <= 0:
+        rec[field] = median
+
+def is_outlier(rec, field, mean, std):
+    return rec[field] > (mean + (std*3))
+
+def fill_in_missing_values(rec):
+    fix_val(rec, "CONTROLLED_TIME", 1080)
+    fix_val(rec, "CLEAR_TIME", 3300)
+    fix_val(rec, "SUPPRESSION_APPARATUS", 3)
+    fix_val(rec, "SUPPRESSION_PERSONNEL", 8)
+    fix_val(rec, "SUPPRESSION_PERSONNEL", 8)
+    fix_val(rec, "SQUARE_FEET", 1200)
+    # PROP_VAL Median > 1000 => 20000
+    if rec["PROP_VALUE"] <= 0:
+        rec["PROP_VALUE"] = 20000
+    return rec
+
+def should_keep(rec):
+    if is_outlier(rec, "CONTROLLED_TIME", 2018, 3107):
+        return False
+    if is_outlier(rec, "CLEAR_TIME", 4833, 5120):
+        return False
+    if is_outlier(rec, "SUPPRESSION_APPARATUS", 6, 100):
+        return False
+    if is_outlier(rec, "SUPPRESSION_PERSONNEL", 10, 19):
+        return False
+    if is_outlier(rec, "SQUARE_FEET", 10497, 585615):
+        return False
+    if is_outlier(rec, "PROP_VALUE", 334636, 8094733):
+        return False
+
+    return True
+
+if not os.path.isfile("./sqlite/clean_incidents.sqlite"):
+    if not os.path.isfile("./sqlite/useful_incidents.sqlite"):
+        print "Oops, useful incidents sqlite file doesn't exist, run \"reduce_to_useful_inputs\" script"
+        sys.exit()
+    print "clean incidents file missing, creating from useful incidents..."
+
+    useful_db = dataset.connect('sqlite:///./sqlite/useful_incidents.sqlite')
+    clean_db = dataset.connect('sqlite:///./sqlite/clean_incidents.sqlite')
+
+    input_table = useful_db['incidents']
+    output_table = clean_db['incidents']
+
+    set = "clean-data"
+    i = 0
+    # about 215k
+    for useful_rec in input_table:
+        if should_keep(useful_rec):
+            clean_rec = OrderedDict()
+            clean_rec.update(useful_rec)
+            del(clean_rec['id']) # don't want to keep the old id
+
+            fill_in_missing_values(clean_rec)
+
+            output_table.insert(clean_rec)
+        i += 1
+        print set + "" + str(i)
+
+
+else:
+    print "clean incidents file already exists"

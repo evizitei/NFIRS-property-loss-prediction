@@ -197,3 +197,14 @@ min         1.000000
 50%      3000.000000
 75%     10000.000000
 max     60000.000000
+
+The next step is to clean up the data so it can be analyzed reliably.  This
+means removing additional outliers from numeric fields and estimating missing
+values.
+
+This script does about 500 records per second over 200k, so a bit less than 7
+minutes to run it:
+
+`./bin/clean_data`
+
+This results in a remaining dataset of 192,405 records.
