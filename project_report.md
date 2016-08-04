@@ -106,9 +106,69 @@ _(approx. 2-4 pages)_
 
 ### Data Exploration
 
-The NFIRS data arrives.
+The NFIRS data arrives in a set of tables that can be joined together.
+The "basicincident.dbf" file has fields that apply to all incidents,
+and then there are other incident fields which are different per type
+of incident being described (basicaid, arson, fireincident,
+  hazmat, wildlands, etc).  For the purposes of this analysis, we're looking
+at fire incidents and the property loss they cause, so we really only
+need the basicincident.dbf file and the fireincident.dbf file.
 
-In this section, you will be expected to analyze the data you are using for the problem. This data can either be in the form of a dataset (or datasets), input data (or input files), or even an environment. The type of data should be thoroughly described and, if possible, have basic statistics and information presented (such as discussion of input features or defining characteristics about the input or environment). Any abnormalities or interesting qualities about the data that may need to be addressed have been identified (such as features that need to be transformed or the possibility of outliers). Questions to ask yourself when writing this section:
+There are over 2 million records in the basicincident file, but only about 600k
+have a record in the fireincident table.  We'll further select out
+those incidents which result in no damage (there are many) and
+those that are not of a "fire" incident type (even in fire incidents, there
+  are things like false alarms which are common), so our final
+data set is actually closer to 200k records.
+
+The target column we'll be looking at is "PROP_LOSS", which represents the
+dollar value loss of property destroyed in a given emergency incident.  After
+trimming outliers (there are several high-dollar value losses that really skew
+  the data over all), here's what the distribution looks like:
+
+| stat  | PROP_LOSS $ value |
+| count |  196574.000000    |
+| mean  |    8914.580748    |
+| std   |   12933.652034    |
+| min   |       1.000000    |
+| 25%   |    1000.000000    |
+| 50%   |    3000.000000    |
+| 75%   |   10000.000000    |
+| max   |   60000.000000    |
+
+We can see that even after chopping off a lot of high value outliers, the data
+skews heavily to the low end, with the median being $3000 even though the mean
+damage is up at $8914.
+
+After combing the fire and basic incident tables into one tabular dataset, there
+are still > 130 columns to consider, many of which are not strongly related
+to the output target (property loss).
+
+Most of the fields are categorical (the type of building, the type of fire,
+the type of ignition source, etc), but there are a few numeric fields
+(number of firetrucks, number of response personnel, square feet of structure).
+
+One of the challenges we have for the numeric fields is that there's plenty
+of missing data.  For example, square feet.  All buildings on fire have
+some square footage, but not all incident reports include it.  Out of nearly
+200000 records 106645 have no square foot value included.  The rest are
+distributed like this:
+
+| field | SQ_FEET  |
+| count |    87153 |
+| mean  |    10291 |
+| std   |   579840 |
+| min   |        1 |
+| 25%   |      800 |
+| 50%   |     1200 |
+| 75%   |     1944 |
+| max   | 10000000 |
+
+There are several fields like this, with high outliers and skewed distributions,
+and a lot of missing data.  The plan for these numeric fields is to replace
+missing values with the median value of the dataset to keep a lot of 0s and -1s
+from throwing off the relationship, and trimming extreme outliers.
+
 - _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
 - _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
 - _If a dataset is **not** present for this problem, has discussion been made about the input space or input data for your problem?_

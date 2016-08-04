@@ -177,3 +177,23 @@ table = db['incidents']
 len(table)
 # -> 196,574
 ```
+
+Summary statistics can be extracted for a given column like so:
+
+```
+import pandas as pd
+import sqlite3
+conn = sqlite3.connect('./sqlite/useful_incidents.sqlite')
+data = pd.read_sql_query("select PROP_LOSS from incidents", conn)
+data.describe()
+```
+
+PROP_LOSS
+count  196574.000000
+mean     8914.580748
+std     12933.652034
+min         1.000000
+25%      1000.000000
+50%      3000.000000
+75%     10000.000000
+max     60000.000000

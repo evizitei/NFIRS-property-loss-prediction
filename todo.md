@@ -10,7 +10,7 @@
 [x] get indexes on sqlite tables to make them easier to query quickly
 [x] update sqlite script to skip steps if sqlite files already exist
 [x] provide code lookups from code DBF file for reference
-[ ] write data exploration section in project_report.md
+[x] write data exploration section in project_report.md
 [x] produce joined dataset of just incidents that are in both the fire incident file and the basic incident file
 [x] produce series of scatter plots tying suspect features to property loss
 [x] make a list of chosen features to train the model on
@@ -18,4 +18,7 @@
 [x] produce smaller dataset containing just features we care about for just relevant incidents
 [ ] split off a test set that will not be used during validation tests,
 so that validation information doesn't bleed back into the model and overfit.
+(30,000 datapoints should do it)
 [ ] spot check a series of common algorithms to see which approaches might be useful
+[ ] take some feature exploration graphs and import them into Exploratory
+visualizations in the project report
