@@ -16,8 +16,8 @@
 [x] make a list of chosen features to train the model on
 [x] fill in missing values with median values for numeric fields
 [x] remove outliers from numeric fields
-[ ] use feature scaling on numeric fields
-[ ] switch all categories into 1-hot encoded vectors
+[x] use feature scaling on numeric fields
+[x] switch all categories into 1-hot encoded vectors
 [x] produce smaller dataset containing just features we care about for just relevant incidents
 [ ] split off a test set that will not be used during validation tests,
 so that validation information doesn't bleed back into the model and overfit.
@@ -25,3 +25,5 @@ so that validation information doesn't bleed back into the model and overfit.
 [ ] spot check a series of common algorithms to see which approaches might be useful
 [ ] take some feature exploration graphs and import them into Exploratory
 visualizations in the project report
+[ ] Tackle a naive regression with minimal optimization in tensor flow and see
+how well it does.

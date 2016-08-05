@@ -207,4 +207,85 @@ minutes to run it:
 
 `./bin/clean_data`
 
-This results in a remaining dataset of 192,405 records.
+This results in a remaining dataset of 192,405 records.  At this point
+we take the data and make categorical fields one-hot encoded vectors,
+and feature-scale numeric fields to be from 0 to 1. Once again
+there is a script for this:
+
+`./bin/normalize_data`
+
+This is still 192k records, but it's only able to process about 200 records per
+second.  This means it's closer to 16 minutes to execute.
+
+A cleaned and normalized record looks like this:
+
+```
+import dataset
+db = dataset.connect('sqlite:///./sqlite/normalized_incidents.sqlite')
+table = db['incidents']
+table.find_one()
+```
+
+OrderedDict([('id', 1),
+             ('PROP_LOSS', 2000),
+             ('STATE_EXPENSE_0', 0),
+             ('STATE_EXPENSE_1', 0),
+             ('STATE_EXPENSE_2', 1),
+             ('INC_TYPE_0', 0),
+             ('INC_TYPE_1', 0),
+             ('INC_TYPE_2', 0),
+             ('INC_TYPE_3', 1),
+             ('INC_TYPE_4', 0),
+             ('INC_TYPE_5', 0),
+             ('INC_TYPE_6', 0),
+             ('AID_0', 1),
+             ('AID_1', 0),
+             ('AID_2', 0),
+             ('AID_3', 0),
+             ('HOUR_GROUP_0', 1),
+             ('HOUR_GROUP_1', 0),
+             ('HOUR_GROUP_2', 0),
+             ('HOUR_GROUP_3', 0),
+             ('CONTROLLED_TIME', 0.09042553191489362),
+             ('CLEAR_TIME', 0.02976190476190476),
+             ('SUPPRESSION_APPARATUS', 0.0),
+             ('SUPPRESSION_PERSONNEL', 0.014925373134328358),
+             ('PROP_VALUE', 0.00021062965584656352),
+             ('DETECTOR_FLAG', 0),
+             ('HAZMAT_RELEASE_0', 1),
+             ('HAZMAT_RELEASE_1', 0),
+             ('HAZMAT_RELEASE_2', 0),
+             ('HAZMAT_RELEASE_3', 0),
+             ('HAZMAT_RELEASE_4', 0),
+             ('MIXED_USE_0', 1),
+             ('MIXED_USE_1', 0),
+             ('MIXED_USE_2', 0),
+             ('MIXED_USE_3', 0),
+             ('MIXED_USE_4', 0),
+             ('HEAT_SOURCE', 0),
+             ('IGNITION_0', 0),
+             ('IGNITION_1', 1),
+             ('IGNITION_2', 0),
+             ('IGNITION_3', 0),
+             ('FIRE_SPREAD_0', 1),
+             ('FIRE_SPREAD_1', 0),
+             ('FIRE_SPREAD_2', 0),
+             ('FIRE_SPREAD_3', 0),
+             ('FIRE_SPREAD_4', 0),
+             ('FIRE_SPREAD_5', 0),
+             ('STRUCTURE_TYPE_0', 1),
+             ('STRUCTURE_TYPE_1', 0),
+             ('STRUCTURE_TYPE_2', 0),
+             ('STRUCTURE_TYPE_3', 0),
+             ('STRUCTURE_TYPE_4', 0),
+             ('STRUCTURE_TYPE_5', 0),
+             ('STRUCTURE_STATUS_0', 1),
+             ('STRUCTURE_STATUS_1', 0),
+             ('STRUCTURE_STATUS_2', 0),
+             ('STRUCTURE_STATUS_3', 0),
+             ('STRUCTURE_STATUS_4', 0),
+             ('SQUARE_FEET', 0.0007094674556213017),
+             ('AES_SYSTEM_0', 1),
+             ('AES_SYSTEM_1', 0),
+             ('AES_SYSTEM_2', 0),
+             ('AES_SYSTEM_3', 0)])
