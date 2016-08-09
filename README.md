@@ -289,3 +289,28 @@ OrderedDict([('id', 1),
              ('AES_SYSTEM_1', 0),
              ('AES_SYSTEM_2', 0),
              ('AES_SYSTEM_3', 0)])
+
+## training/validation split
+
+Before we start analyzing, I'm going to take some data (about 30,000 records)
+and split them off for a validation set.  Out of the 192k records, that means
+we'll still have around 160k for training/crossvalidation.  Here's the splitter
+script:
+
+`./bin/split_off_test_set`
+
+On my machine this is processing about 200 rows per second, so for 192k records
+to get sorted that's about 16 minutes.   Afterwards you can check
+the data split sizes like this:
+
+A cleaned and normalized record looks like this:
+
+```
+import dataset
+tdb = dataset.connect('sqlite:///./sqlite/training_incidents.sqlite')
+vdb = dataset.connect('sqlite:///./sqlite/validation_incidents.sqlite')
+t_table = tdb['incidents']
+v_table = vdb['incidents']
+len(t_table) # -> 162448
+len(v_table) # -> 29957
+```

@@ -19,7 +19,7 @@
 [x] use feature scaling on numeric fields
 [x] switch all categories into 1-hot encoded vectors
 [x] produce smaller dataset containing just features we care about for just relevant incidents
-[ ] split off a test set that will not be used during validation tests,
+[x] split off a test set that will not be used during validation tests,
 so that validation information doesn't bleed back into the model and overfit.
 (30,000 datapoints should do it)
 [ ] spot check a series of common algorithms to see which approaches might be useful

@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import dataset
+import random
+from collections import OrderedDict
+
+if not os.path.isfile("./sqlite/training_incidents.sqlite"):
+    if not os.path.isfile("./sqlite/normalized_incidents.sqlite"):
+        print "Oops, normalized incidents sqlite file doesn't exist, run \"normalize_data\" script"
+        sys.exit()
+    print "training/validation incidents files missing, creating from normalized incidents..."
+
+
+    normalized_db = dataset.connect('sqlite:///./sqlite/normalized_incidents.sqlite')
+    training_db = dataset.connect('sqlite:///./sqlite/training_incidents.sqlite')
+    validation_db = dataset.connect('sqlite:///./sqlite/validation_incidents.sqlite')
+
+    input_table = normalized_db['incidents']
+    training_table = training_db['incidents']
+    validation_table = validation_db['incidents']
+
+    validation_threshold = 3.0/19.2 # so that we get about 30k records from 192k
+    set = "split-data"
+    i = 0
+    # about 192k
+    for normalized_rec in input_table:
+        output_set_rec = OrderedDict()
+        output_set_rec.update(normalized_rec)
+        del(output_set_rec['id']) # don't want to keep the old id
+
+        if random.random() <= validation_threshold:
+            validation_table.insert(output_set_rec)
+        else:
+            training_table.insert(output_set_rec)
+        i += 1
+        print set + "" + str(i)
+else:
+    print "training/validation incidents file already exists"
+
+print "Done!"
