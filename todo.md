@@ -22,8 +22,7 @@
 [x] split off a test set that will not be used during validation tests,
 so that validation information doesn't bleed back into the model and overfit.
 (30,000 datapoints should do it)
-[ ] spot check a series of common algorithms to see which approaches might be useful
+[x] spot check a series of common algorithms to see which approaches might be useful
 [ ] take some feature exploration graphs and import them into Exploratory
 visualizations in the project report
-[ ] Tackle a naive regression with minimal optimization in tensor flow and see
-how well it does.
+[ ] perform parameter tuning for Random Forest, Bagging, and GradientBoost regressions

@@ -314,3 +314,10 @@ v_table = vdb['incidents']
 len(t_table) # -> 162448
 len(v_table) # -> 29957
 ```
+
+Algorithm selection is explored in
+a jupyter notebook at
+AlgorithmExploration.ipynb, which
+can be started and explored with:
+
+`jupyter notebook AlgorithmExploration.ipynb`
