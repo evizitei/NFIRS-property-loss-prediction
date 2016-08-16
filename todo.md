@@ -25,4 +25,7 @@ so that validation information doesn't bleed back into the model and overfit.
 [x] spot check a series of common algorithms to see which approaches might be useful
 [ ] take some feature exploration graphs and import them into Exploratory
 visualizations in the project report
-[ ] perform parameter tuning for Random Forest, Bagging, and GradientBoost regressions
+[x] perform parameter tuning for Random Forest, Bagging, and GradientBoost regressions
+[ ] Write up algorithms and Techniques section
+[ ] line out data preprocessing
+scripts in the Data Preprocessing Section of the writeup

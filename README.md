@@ -321,3 +321,9 @@ AlgorithmExploration.ipynb, which
 can be started and explored with:
 
 `jupyter notebook AlgorithmExploration.ipynb`
+
+Hyperparameter tuning is done with the tune_params script in the bin
+folder; it has the actual analysis step commented out, so you can uncomment
+the oen you want to run; running _all_ of them at once would take some time.
+The comments in that file contain the resulting best found parameters for
+each learner.

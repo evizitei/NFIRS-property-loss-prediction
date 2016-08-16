@@ -1,0 +1,103 @@
+#!/usr/bin/env python
+
+import sqlite3
+import numpy as np
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import median_absolute_error
+from sklearn.metrics import r2_score
+from sklearn.grid_search import GridSearchCV
+
+conn = sqlite3.connect('./sqlite/training_incidents.sqlite')
+r_seed = 83
+
+inputs = []
+labels = []
+db_results = conn.execute("SELECT * from incidents")
+for rec in db_results:
+    a_rec = np.array(rec)
+# split data into inputs and labels
+    if a_rec[1] > 5.0:
+        labels.append(rec[1])
+        inputs.append(rec[2:])
+
+all_inputs = np.array(inputs)
+all_labels = np.array(labels)
+
+inputs_train, inputs_test, labels_train, labels_test = train_test_split(all_inputs, all_labels, test_size=0.10, random_state=r_seed)
+
+
+from sklearn.ensemble import GradientBoostingRegressor
+
+def analyze_fit(grid):
+    grid.fit(inputs_train, labels_train)
+    print(grid)
+    print(grid.best_score_)
+    print(grid.best_estimator_)
+
+gbr_param_grid = [
+    {
+        'min_samples_split': [5,9],
+        'min_samples_leaf': [1,3,5],
+        'n_estimators': [100,250],
+        'max_depth': [2,3,5]
+    }
+]
+
+gbr = GradientBoostingRegressor(loss='ls', learning_rate=1.0)
+gbr_grid = GridSearchCV(estimator=gbr, param_grid=gbr_param_grid, verbose=2, n_jobs=-1)
+#
+#0.527583028651
+#GradientBoostingRegressor(alpha=0.9, init=None, learning_rate=1.0, loss='ls',
+#             max_depth=2, max_features=None, max_leaf_nodes=None,
+#             min_samples_leaf=3, min_samples_split=9,
+#             min_weight_fraction_leaf=0.0, n_estimators=250,
+#             presort='auto', random_state=None, subsample=1.0, verbose=0,
+#             warm_start=False)
+
+
+from sklearn.ensemble import RandomForestRegressor
+rfr_param_grid = [
+    {
+        'min_samples_split': [5,9],
+        'min_samples_leaf': [1,3,5],
+        'n_estimators': [10,100,250],
+        'max_depth': [2,3,5]
+    }
+]
+
+rfr = RandomForestRegressor()
+rfr_grid = GridSearchCV(estimator=rfr, param_grid=rfr_param_grid, verbose=2, n_jobs=-1)
+#0.466716793683
+#RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=5,
+#           max_features='auto', max_leaf_nodes=None, min_samples_leaf=5,
+#           min_samples_split=9, min_weight_fraction_leaf=0.0,
+#           n_estimators=10, n_jobs=1, oob_score=False, random_state=None,
+#           verbose=0, warm_start=False)
+
+from sklearn.ensemble import BaggingRegressor
+
+bag_param_grid = [
+    {
+        'max_features': [1.0,0.75,0.5],
+        'n_estimators': [10,25,50],
+        'max_samples': [1.0,0.75,0.5],
+    }
+]
+
+bag = BaggingRegressor()
+bag_grid = GridSearchCV(estimator=bag, param_grid=bag_param_grid, verbose=2, n_jobs=-1)
+#0.532894876507
+#BaggingRegressor(base_estimator=None, bootstrap=True,
+#         bootstrap_features=False, max_features=1.0, max_samples=0.5,
+#         n_estimators=50, n_jobs=1, oob_score=False, random_state=None,
+#         verbose=0, warm_start=False)
+
+
+# uncomment the one you want to run, running them all together will
+# take a while
+#analyze_fit(gbr_grid)
+#analyze_fit(rfr_grid)
+analyze_fit(bag_grid)
