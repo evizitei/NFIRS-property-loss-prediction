@@ -17,11 +17,9 @@ inputs = []
 labels = []
 db_results = conn.execute("SELECT * from incidents")
 for rec in db_results:
-    a_rec = np.array(rec)
 # split data into inputs and labels
-    if a_rec[1] > 5.0:
-        labels.append(rec[1])
-        inputs.append(rec[2:])
+    labels.append(rec[1])
+    inputs.append(rec[2:])
 
 all_inputs = np.array(inputs)
 all_labels = np.array(labels)
@@ -49,11 +47,11 @@ gbr_param_grid = [
 gbr = GradientBoostingRegressor(loss='ls', learning_rate=1.0)
 gbr_grid = GridSearchCV(estimator=gbr, param_grid=gbr_param_grid, verbose=2, n_jobs=-1)
 #
-#0.527583028651
+#0.636959489576
 #GradientBoostingRegressor(alpha=0.9, init=None, learning_rate=1.0, loss='ls',
-#             max_depth=2, max_features=None, max_leaf_nodes=None,
-#             min_samples_leaf=3, min_samples_split=9,
-#             min_weight_fraction_leaf=0.0, n_estimators=250,
+#             max_depth=3, max_features=None, max_leaf_nodes=None,
+#             min_samples_leaf=5, min_samples_split=5,
+#             min_weight_fraction_leaf=0.0, n_estimators=100,
 #             presort='auto', random_state=None, subsample=1.0, verbose=0,
 #             warm_start=False)
 
@@ -70,9 +68,9 @@ rfr_param_grid = [
 
 rfr = RandomForestRegressor()
 rfr_grid = GridSearchCV(estimator=rfr, param_grid=rfr_param_grid, verbose=2, n_jobs=-1)
-#0.466716793683
+#0.575212520004
 #RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=5,
-#           max_features='auto', max_leaf_nodes=None, min_samples_leaf=5,
+#           max_features='auto', max_leaf_nodes=None, min_samples_leaf=1,
 #           min_samples_split=9, min_weight_fraction_leaf=0.0,
 #           n_estimators=10, n_jobs=1, oob_score=False, random_state=None,
 #           verbose=0, warm_start=False)
@@ -83,15 +81,15 @@ bag_param_grid = [
     {
         'max_features': [1.0,0.75,0.5],
         'n_estimators': [10,25,50],
-        'max_samples': [1.0,0.75,0.5],
+        'max_samples': [1.0,0.75,0.5]
     }
 ]
 
 bag = BaggingRegressor()
 bag_grid = GridSearchCV(estimator=bag, param_grid=bag_param_grid, verbose=2, n_jobs=-1)
-#0.532894876507
+#0.632741581369
 #BaggingRegressor(base_estimator=None, bootstrap=True,
-#         bootstrap_features=False, max_features=1.0, max_samples=0.5,
+#         bootstrap_features=False, max_features=0.75, max_samples=0.5,
 #         n_estimators=50, n_jobs=1, oob_score=False, random_state=None,
 #         verbose=0, warm_start=False)
 

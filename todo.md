@@ -29,3 +29,4 @@ visualizations in the project report
 [ ] Write up algorithms and Techniques section
 [ ] line out data preprocessing
 scripts in the Data Preprocessing Section of the writeup
+[x] rework last transformation to normalize to log of residual and re-model/tune

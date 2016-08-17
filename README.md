@@ -209,7 +209,9 @@ minutes to run it:
 
 This results in a remaining dataset of 192,405 records.  At this point
 we take the data and make categorical fields one-hot encoded vectors,
-and feature-scale numeric fields to be from 0 to 1. Once again
+and feature-scale numeric fields to be from 0 to 1. We also use
+the log of the prop loss rather than it's normal value to unskew it
+before trying to get a good regression.  Once again
 there is a script for this:
 
 `./bin/normalize_data`
@@ -227,7 +229,7 @@ table.find_one()
 ```
 
 OrderedDict([('id', 1),
-             ('PROP_LOSS', 2000),
+             ('PROP_LOSS', 3.30102999566), # log of 2000
              ('STATE_EXPENSE_0', 0),
              ('STATE_EXPENSE_1', 0),
              ('STATE_EXPENSE_2', 1),
