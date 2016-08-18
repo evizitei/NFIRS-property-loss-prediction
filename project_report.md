@@ -175,7 +175,23 @@ from throwing off the relationship, and trimming extreme outliers.
 - _Are there any abnormalities or characteristics about the input space or dataset that need to be addressed? (categorical variables, missing values, outliers, etc.)_
 
 ### Exploratory Visualization
-In this section, you will need to provide some form of visualization that summarizes or extracts a relevant characteristic or feature about the data. The visualization should adequately support the data being used. Discuss why this visualization was chosen and how it is relevant. Questions to ask yourself when writing this section:
+
+One of the first things I wanted to look at was the distribution of the
+target variable (the property loss value), because many of the values
+tended low and I know for regression problems it's nice to have
+a normal distribution.  Here's the distribution of the raw data:
+
+![Property Loss](images/PropLossDistribution.png)
+
+It skews to the right pretty significantly. I experimented with trying to
+perform a regression on it with several learners, and when I compared
+them to running the same regression exercise on the log of that
+target variable the difference in r-squared scores was a full 0.1 for
+nearly every learner in favor of the log version.  Here's
+the same data run through a logarithmic transform first:
+
+![Property Loss Log](images/PropLossLogDistribution.png)
+
 - _Have you visualized a relevant characteristic or feature about the dataset or input data?_
 - _Is the visualization thoroughly analyzed and discussed?_
 - _If a plot is provided, are the axes, title, and datum clearly defined?_
