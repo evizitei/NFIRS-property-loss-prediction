@@ -283,7 +283,140 @@ notebook.
 _(approx. 3-5 pages)_
 
 ### Data Preprocessing
-In this section, all of your preprocessing steps will need to be clearly documented, if any were necessary. From the previous section, any of the abnormalities or characteristics that you identified about the dataset will be addressed and corrected here. Questions to ask yourself when writing this section:
+
+The first step I went through was transforming the DBF files
+into a format I could work with more easily (sqlite), which just
+involved doing a one-to-one transformation of the tables I cared
+about (2 out of something like 12 tables) from the DBF files to records in a sqlite database. See the
+script at "bin/data_to_sqlite" for this transformation.
+
+Step 2 was to take to join together the Fire incidents and Basic
+incidents tables together into a single tabular row per datapoint
+for easier fitting to the sklearn models later. The raw data is
+structured such that a single incident might have data about it
+denormalized across many tables, but what I cared about for this
+process was the data in the "Fire incidents" table, and it's
+accompanying  information in the "Basic Incidents" table.  
+Joining them was a simple matter of iterating through all records
+in the fire table, finding the accompanying record in the basic
+table, and joining them together into a single record in the
+output database for that step.  This is done in the script
+located at "bin/join_incidents_to_one_table"
+
+The NFIRS dataset has a lot of dimensions available.  Since I only
+really have 200k data points to use, I didn't want to include everything
+because I was concerned about the curse of dimensionality.  Due to this,
+the first major preprocessing step I took was Feature Selection.  I took
+each feature that I though might be relevant and tried to plot it against
+the target variable (Property Value Loss) to see if it showed a
+relationship.  The "FeatureExploration" notebook contains this work.
+
+As a result of this visualization exercise, I selected the following inputs
+which seemed to show relevant relationships:
+
+*STATE*: which US state the incident occurred in
+*INCIDENT TYPE*: (Cooking fire, chimney fire, portable building fire,
+  outside fire, etc)
+*AID*: whether help was received from other fire departments
+*HOUR OF DAY*: What time of day the fire occurred
+*CONTROLLED TIME*: how long it took the fire department to control the fire
+*CLEAR TIME*: Time elapsed from arrival to departure of fire protection
+units
+*SUPPRESSION_APPARATUS*: How many fire trucks were sent
+*SUPPRESSION_PERSONNEL*: How many firefighters were dispatched
+*PROPERTY VALUE*: the initial value of the property on which the fire occurred
+*DETECTOR ALERT*: was there a fire detector, did it alarm, did it alert the occupants
+*HAZMAT RELEASE*: what (if any) hazardous or flammable materials were
+released in the incident (Propane, paint, etc)
+*PROPERTY_USE*: Primary purpose a building is used for (Mall,
+  Healthcare, Residential, etc)
+*MIXED_USE*: OTHER purposes a building is used for
+*NOT_RESIDENTIAL*: if true, building is not used for residential
+*AREA_ORIGIN*: where did the fire start? (hallway, bedroom, storage)
+*HEAT_SOURCE*: what started the fire?
+(Sunlight, static discharge, fireworks, etc)
+*IGNITION*: Basically was it intentional, an accident, or natural
+*FIRE_SPREAD*: how far did the fire spread? (object of
+  origin, room of origin, floor of origin, etc)
+*STRUCTURE_TYPE*: Enclosed Building, Tent, Underground, etc
+*STRUCTURE_STATUS*: Under construction, normal use, vacant
+*SQUARE_FEET*: exactly what it sounds like
+*AES_SYSTEM*: Automatic Extinguishing System
+
+The next step I went through was outlier removal, because there
+are a lot of values that skew quite heavily to the upper end and they have
+so much variance, removing outliers entirely seems like the prudent approach
+for this use case.  The incidents that had astronomically high property losses
+were also obviously catastrophic incidents, and what we're trying to tackle
+in this problem is revealing relative property loss predictions that might not
+be immediately obvious to a human actor.  I used a normal distribution
+analysis in a pandas dataframe and found the line where the top 10% of the
+data set started ($60,000 in damage) and removed all data points with
+target values above that from the dataset.  I also removed
+data points where we had no incident type or where the incident
+type was not a fire, since there are many data points
+for medical or rescue incidents that don't result in property
+damage at all and those aren't the incidents that we're
+concerned about for the problem statement mentioned in the
+use cases at the beginning of this report.
+
+All the work mentioned above so far is done in the
+"reduce_to_useful_inputs" script in the bin folder.  Throughout
+the project I've tried to make sure each step is a distinct
+function of the data generated in the step before so that I have
+checkpoint artifacts of data written to storage along the
+way after each transformation to play with (this helped
+enormously in debugging).
+
+In that same script, I also began batching up features
+that were generating too many dimensions.  For example,
+the "STATE" feature has 50 possible values.  Encoding
+this as a 1-hot vector requires 50 dimensions, and the actual
+variance it represents is quite tiered, not unique
+per state.  So instead of having 50 categories, I reduced
+this feature to 3 categories (those abnormally cheap states,
+  those which were abnormally expensive, and the remainder). Many
+features with a ton of potential options were grouped in similiar
+ways based on observations in the FeatureExploration notebook
+(for example, rather than having hours 0-24, we use 3 categories
+  with similar target variable distribution: morning/evening,
+  afternoon, and overnight).
+
+The next step was to clean up the data.  There were several records
+that had many missing values or huge outliers in given inputs.
+To prevent them from affecting the input too dramatically, I took
+a few different approaches.  For those input features with many values
+missing, I replaced missing values with the median value for that
+feature (controlled time, square feet, property value, clear time,
+  suppression apparatus, suppression personnel).  For those same
+  features, I'd just remove their data row from
+the training set entirely if the row had a very large outlier.
+This process reduced the dataset from about 215k candidate datapoints
+to about 192k records, and was performed in the script "bin/clean_data".
+
+More preprocessing was still necessary, however, because categorical
+input dimensions were still represented by integers at this point and
+continuous data inputs had quite variable scales (apparatus might be
+anywhere from 2 to 100, but square feet might be 3000 to several
+hundred thousand) which could have an inadvertan weighting impact on
+how signficiantly each input is considered.  For categorical inputs,
+I used 1-hot encoded vectors to make each possible category a binary
+dimension on it's own.  For continuous inputs, I used the min/max of
+their distribution to transform their values to a floating point
+number between 0 and 1. This work was done in the script at
+"bin/normalize_data".
+
+At this point I had a dataset of only relevant records with
+all the inputs cleaned and processed ready for training.  To make
+sure I had a validation set left over of totally unseen data
+to check the real error rate against, I reserved about 30,000 records
+at this point by removing them from the dataset and writing
+them to a different datastore (random selection).  This work
+can be seen in the script at "bin/split_off_test_set".
+
+The records ready for training were now available in the
+sqlite file "data/training_incidents.sqlite".
+
 - _If the algorithms chosen require preprocessing steps like feature selection or feature transformations, have they been properly documented?_
 - _Based on the **Data Exploration** section, if there were abnormalities or characteristics that needed to be addressed, have they been properly corrected?_
 - _If no preprocessing is needed, has it been made clear why?_

@@ -27,7 +27,7 @@ so that validation information doesn't bleed back into the model and overfit.
 visualizations in the project report
 [x] perform parameter tuning for Random Forest, Bagging, and GradientBoost regressions
 [x] Write up algorithms and Techniques section
-[ ] line out data preprocessing
+[x] line out data preprocessing
 scripts in the Data Preprocessing Section of the writeup
 [x] rework last transformation to normalize to log of residual and re-model/tune
 [x] write up benchmarks
