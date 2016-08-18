@@ -197,7 +197,49 @@ the same data run through a logarithmic transform first:
 - _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Algorithms and Techniques
-In this section, you will need to discuss the algorithms and techniques you intend to use for solving the problem. You should justify the use of each one based on the characteristics of the problem and the problem domain. Questions to ask yourself when writing this section:
+
+My plan of attack was to spot check a series of regression learning
+algorithms and pick a few that perform fairly well with naive parameters
+to tune further.
+
+The algorithm that performed above and beyond the other regressions
+considered was Gradient Tree Boosting.  This is a process where
+a sequence of weak learners are fit in sequence to try to get closer
+and closer to the correct labels for given inputs.  The set of learners
+are combined additively so that a prediction is really the sum of all
+the weak trees in the model. The "gradient" portion is for gradient
+descent, which in this case is by following a given loss function
+and trying to minimize it with each step (I use "least squares" in
+this project).
+
+This algorithm has several hyperparameters that I tuned:
+
+*loss function*: Although I chose to use least squares, it's also
+possible to use absolute error or a couple other options that are more
+resiliant to outliers.  In this case I removed the significant
+outliers from the dataset up front, and my exhaustive grid search
+yielded the best results with least squares.
+
+*learning_rate*: this represents how much one trusts the change of
+each additional weak learner.  However, since I tuned with the
+n_estimators parameter I didn't mess with this much (a lower learning rate
+with more learners should behave similarly to a higher learning rate
+with fewer learners).
+
+*n_estimators*: This is just the number of boosting steps to go
+through, could also be though of as the number of weak learners used
+in sequence.
+
+*max_depth*: how deep any given weak learner can go, which can
+help avoid overfitting.
+
+*min_samples_split*: how big a leaf in a given tree is allowed to be.
+
+For initial training I just used a series of default parameters to see
+how the model did out of the box, then during tuning I built a grid of
+possible parameter combinations and ran them exhaustively through all
+combinations to see which combination yielded the best performing learner.
+
 - _Are the algorithms you will use, including any default variables/parameters in the project clearly defined?_
 - _Are the techniques to be used thoroughly discussed and justified?_
 - _Is it made clear how the input data or datasets will be handled by the algorithms and techniques chosen?_

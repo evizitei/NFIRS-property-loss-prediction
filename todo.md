@@ -26,7 +26,8 @@ so that validation information doesn't bleed back into the model and overfit.
 [x] take some feature exploration graphs and import them into Exploratory
 visualizations in the project report
 [x] perform parameter tuning for Random Forest, Bagging, and GradientBoost regressions
-[ ] Write up algorithms and Techniques section
+[x] Write up algorithms and Techniques section
 [ ] line out data preprocessing
 scripts in the Data Preprocessing Section of the writeup
 [x] rework last transformation to normalize to log of residual and re-model/tune
+[ ] write up benchmarks
