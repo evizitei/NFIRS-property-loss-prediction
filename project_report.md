@@ -245,7 +245,36 @@ combinations to see which combination yielded the best performing learner.
 - _Is it made clear how the input data or datasets will be handled by the algorithms and techniques chosen?_
 
 ### Benchmark
-In this section, you will need to provide a clearly defined benchmark result or threshold for comparing across performances obtained by your solution. The reasoning behind the benchmark (in the case where it is not an established result) should be discussed. Questions to ask yourself when writing this section:
+
+I used a random dummy regression to produce a baseline set of scoring
+metrics in order to make sure that any results I obtained were
+signficant.  When run over the training set of data and then predicting
+against the test set, the Dummy learner performed as follows:
+
+```
+Mean Absolute Error:   1.56
+Mean Squared Error:    4.44
+Median Absolute Error: 1.39
+R - Squared:          -3.33
+```
+
+remember, those are errors off of the log of the property damage target.
+I then also checked the performance of a naive linear regression just
+to have a sense of how much better a given approach would do compared
+to the results of a fairly simply out-of-the-box algorithm using the
+same approach as the dummy (train against the training set, score
+  against the test set):
+
+```
+Mean Absolute Error:   1.22
+Mean Squared Error:    2.90
+Median Absolute Error: 0.94
+R - Squared:           0.35
+```
+
+The results here are covered in detail in the AlgorithmExploration
+notebook.
+
 - _Has some result or value been provided that acts as a benchmark for measuring performance?_
 - _Is it clear how this result or value was obtained (whether by data or by hypothesis)?_
 

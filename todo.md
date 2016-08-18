@@ -30,4 +30,15 @@ visualizations in the project report
 [ ] line out data preprocessing
 scripts in the Data Preprocessing Section of the writeup
 [x] rework last transformation to normalize to log of residual and re-model/tune
-[ ] write up benchmarks
+[x] write up benchmarks
+[ ] write up implementation section
+[ ] write up refinement (cover outlier removal, feature scaling, logarithmic
+  discovery, and model tuning)
+[ ] perform sensitivity analysis
+[ ] Write up model validation and evalution section
+[ ] write up justification with comparison to benchmarks
+[ ] produce a visualization of the predicted values vs the validation set
+[ ] write up free-form visualization section
+[ ] write up project Reflection
+[ ] Identify and document possible improvements to this model (particularly
+   with respect to use cases)
