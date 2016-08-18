@@ -35,6 +35,7 @@ scripts in the Data Preprocessing Section of the writeup
 [ ] write up refinement (cover outlier removal, feature scaling, logarithmic
   discovery, and model tuning)
 [ ] perform sensitivity analysis
+[x] Check error rate against validation set
 [ ] Write up model validation and evalution section
 [ ] write up justification with comparison to benchmarks
 [ ] produce a visualization of the predicted values vs the validation set
@@ -42,3 +43,5 @@ scripts in the Data Preprocessing Section of the writeup
 [ ] write up project Reflection
 [ ] Identify and document possible improvements to this model (particularly
    with respect to use cases)
+[ ] build a function that accepts un-scaled inputs and produces a un-logrithm'd
+prediction value
