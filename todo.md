@@ -45,3 +45,5 @@ scripts in the Data Preprocessing Section of the writeup
    with respect to use cases)
 [x] build a function that accepts un-scaled inputs and produces a un-logrithm'd
 prediction value
+[ ] build a notebook to compare un-logrithm'd
+input labels and output labels
