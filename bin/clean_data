@@ -4,24 +4,11 @@ import os
 import sys
 import dataset
 from collections import OrderedDict
+from lib import nfirs_features
 
-def fix_val(rec, field, median):
-    if rec[field] <= 0:
-        rec[field] = median
 
 def is_outlier(rec, field, mean, std):
     return rec[field] > (mean + (std*3))
-
-def fill_in_missing_values(rec):
-    fix_val(rec, "CONTROLLED_TIME", 1080)
-    fix_val(rec, "CLEAR_TIME", 3300)
-    fix_val(rec, "SUPPRESSION_APPARATUS", 3)
-    fix_val(rec, "SUPPRESSION_PERSONNEL", 8)
-    fix_val(rec, "SQUARE_FEET", 1200)
-    # PROP_VAL Median > 1000 => 20000
-    if rec["PROP_VALUE"] <= 0:
-        rec["PROP_VALUE"] = 20000
-    return rec
 
 def should_keep(rec):
     if is_outlier(rec, "CONTROLLED_TIME", 2018, 3107):
@@ -60,7 +47,7 @@ if not os.path.isfile("./sqlite/clean_incidents.sqlite"):
             clean_rec.update(useful_rec)
             del(clean_rec['id']) # don't want to keep the old id
 
-            fill_in_missing_values(clean_rec)
+            nfirs_features.fill_in_missing_values(clean_rec)
 
             output_table.insert(clean_rec)
         i += 1

@@ -43,5 +43,5 @@ scripts in the Data Preprocessing Section of the writeup
 [ ] write up project Reflection
 [ ] Identify and document possible improvements to this model (particularly
    with respect to use cases)
-[ ] build a function that accepts un-scaled inputs and produces a un-logrithm'd
+[x] build a function that accepts un-scaled inputs and produces a un-logrithm'd
 prediction value

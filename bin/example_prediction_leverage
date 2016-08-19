@@ -1,0 +1,203 @@
+#!/usr/bin/env python
+import pickle
+import math
+import numpy as np
+from collections import OrderedDict
+from lib import nfirs_features
+
+gradient_boost_regression = pickle.load(open('final_model.pickle', 'r'))
+
+def state_value(values):
+    if "STATE" in values.keys():
+        return nfirs_features.state_expense_level(values['STATE'])
+    return 1 # default value if missing
+
+def inc_type_value(values):
+    if "INC_TYPE" in values.keys():
+        return nfirs_features.map_inc_type(values["INC_TYPE"])
+    return 10
+
+def aid_value(values):
+    if "AID" in values.keys():
+        return nfirs_features.aid_level(values["AID"])
+    return 0
+
+def hour_group_value(values):
+    if "ALARM" in values.keys():
+        return nfirs_features.hour_group(values["ALARM"])
+    return 0
+
+def controlled_time_value(values):
+    if "ALARM" in values.keys() and "INC_CONT" in values.keys():
+        return nfirs_features.controlled_time(values["ALARM"], values["INC_CONT"])
+    return 0
+
+def clear_time_value(values):
+    if "ALARM" in values.keys() and "LU_CLEAR" in values.keys():
+        return nfirs_features.controlled_time(values["ALARM"], values["LU_CLEAR"])
+    return 0
+
+def sup_app_value(values):
+    if "SUP_APP" in values.keys():
+        return nfirs_features.intfix(values["SUP_APP"])
+    return -1
+
+def sup_per_value(values):
+    if "SUP_PER" in values.keys():
+        return nfirs_features.intfix(values["SUP_PER"])
+    return -1
+
+def prop_val_value(values):
+    if "PROP_VALUE" in values.keys():
+        return nfirs_features.intfix(values["PROP_VALUE"])
+    return -1
+
+def detector_flag_value(values):
+    if "DET_ALERT" in values.keys():
+        return nfirs_features.detector_flag(values["DET_ALERT"])
+    return 0
+
+def haz_rel_value(values):
+    if "HAZ_REL" in values.keys():
+        return nfirs_features.hazmat_group(values["HAZ_REL"])
+    return 0
+
+def mixed_use_value(values):
+    if "MIXED_USE" in values.keys():
+        return nfirs_features.mixed_use_group(values["MIXED_USE"])
+    return 0
+
+def prop_use_value(values):
+    if "PROP_USE" in values.keys():
+        return nfirs_features.property_use_group(values["PROP_USE"])
+    return 0
+
+def not_res_value(values):
+    if "NOT_RES" in values.keys():
+        return nfirs_features.property_use_group(values["NOT_RES"])
+    return 0
+
+def area_origin_value(values):
+    if "AREA_ORIG" in values.keys():
+        return nfirs_features.area_origin_group(values["AREA_ORIG"])
+    return 0
+
+def heat_source_value(values):
+    if "HEAT_SOURC" in values.keys():
+        return nfirs_features.heat_source_group(values["AREA_ORIG"])
+    return 0
+
+def cause_ign_value(values):
+    if "CAUSE_IGN" in values.keys():
+        return nfirs_features.ignition_group(values["CAUSE_IGN"])
+    return 0
+
+def fire_spread_value(values):
+    if "FIRE_SPRD" in values.keys():
+        return nfirs_features.fire_spread_group(values["FIRE_SPRD"])
+    return 0
+
+def struct_type_value(values):
+    if "STRUC_TYPE" in values.keys():
+        return nfirs_features.structure_type_group(values["STRUC_TYPE"])
+    return 0
+
+def struct_status_value(values):
+    if "STRUC_STAT" in values.keys():
+        return nfirs_features.structure_status_group(values["STRUC_STAT"])
+    return 0
+
+def square_feet_value(values):
+    if "TOT_SQ_FT" in values.keys():
+        return nfirs_features.intfix(values["TOT_SQ_FT"])
+    return -1
+
+def aes_pres_value(values):
+    if "AES_PRES" in values.keys():
+        return nfirs_features.aes_system_group(values["AES_PRES"])
+    return 0
+
+def build_base_record(values):
+    predict_params = OrderedDict()
+    predict_params["STATE_EXPENSE"] = state_value(values)
+    predict_params["INC_TYPE"] = inc_type_value(values)
+    predict_params["AID"] = aid_value(values)
+    predict_params["HOUR_GROUP"] = hour_group_value(values)
+    predict_params["CONTROLLED_TIME"] = controlled_time_value(values)
+    predict_params["CLEAR_TIME"] = clear_time_value(values)
+    predict_params["SUPPRESSION_APPARATUS"] = sup_app_value(values)
+    predict_params["SUPPRESSION_PERSONNEL"] = sup_per_value(values)
+    predict_params["PROP_VALUE"] = prop_val_value(values)
+    predict_params["DETECTOR_FLAG"] = detector_flag_value(values)
+    predict_params["HAZMAT_RELEASE"] = haz_rel_value(values)
+    predict_params["MIXED_USE"] = mixed_use_value(values)
+    predict_params["PROPERTY_USE"] = prop_use_value(values)
+    predict_params["NOT_RESIDENTIAL"] = not_res_value(values)
+    predict_params["AREA_ORIGIN"] = area_origin_value(values)
+    predict_params["HEAT_SOURCE"] = heat_source_value(values)
+    predict_params["IGNITION"] = cause_ign_value(values)
+    predict_params["FIRE_SPREAD"] = fire_spread_value(values)
+    predict_params["STRUCTURE_TYPE"] = struct_type_value(values)
+    predict_params["STRUCTURE_STATUS"] = struct_status_value(values)
+    predict_params["SQUARE_FEET"] = square_feet_value(values)
+    predict_params["AES_SYSTEM"] = aes_pres_value(values)
+    return predict_params
+
+
+def predict_property_loss(values):
+    base_rec = build_base_record(values)
+    clean_rec = nfirs_features.fill_in_missing_values(base_rec)
+    normalized_rec = OrderedDict()
+    normalized_rec = nfirs_features.normalize_features(clean_rec, normalized_rec)
+    input_vector = np.array(normalized_rec.values())
+    output_value = gradient_boost_regression.predict([input_vector])[0]
+    return math.exp(output_value)
+
+
+print "EMPTY INPUT"
+predicted = predict_property_loss({})
+print "PREDICTION"
+print "$ %s" % round(predicted,2)
+
+
+print "MADE UP PARTIAL INPUT"
+input_hash = {
+  'STATE_EXPENSE': 2,
+  'INC_TYPE': 13,
+  'AID': 2,
+  'HOUR_GROUP': 3
+}
+print input_hash
+predicted = predict_property_loss(input_hash)
+print "PREDICTION"
+print "$ %s" % round(predicted,2)
+
+print "MADE UP FULL INPUT"
+input_hash = {
+  'STATE_EXPENSE': 2,
+  'INC_TYPE': 13,
+  'AID': 1,
+  'HOUR_GROUP': 4,
+  'CONTROLLED_TIME': 3000,
+  'CLEAR_TIME': 7000,
+  'SUPPRESSION_APPARATUS': 15,
+  'SUPPRESSION_PERSONNEL': 25,
+  'PROP_VALUE': 300000,
+  'DETECTOR_FLAG': 1,
+  'HAZMAT_RELEASE': 3,
+  'MIXED_USE': 3,
+  'PROPERTY_USE': 4,
+  'NOT_RESIDENTIAL': 0,
+  'AREA_ORIGIN': 2,
+  'HEAT_SOURCE': 3,
+  'IGNITION': 4,
+  'FIRE_SPREAD': 3,
+  'STRUCTURE_TYPE': 2,
+  'STRUCTURE_STATUS': 3,
+  'SQUARE_FEET': 5000,
+  'AES_SYSTEM': 2
+}
+print input_hash
+predicted = predict_property_loss(input_hash)
+print "PREDICTION"
+print "$ %s" % round(predicted,2)

@@ -5,39 +5,7 @@ import sys
 import dataset
 import math
 from collections import OrderedDict
-
-def one_hot_encode(out_rec, in_rec, field, count):
-    val = in_rec[field]
-    for i in range(count):
-        out_field = field + "_" + str(i)
-        if i == val:
-            out_rec[out_field] = 1
-        else:
-            out_rec[out_field] = 0
-
-def one_hot_encode_incident_type(out_rec, in_rec):
-    mapping = {
-        10: 0,
-        11: 1,
-        12: 2,
-        13: 3,
-        14: 4,
-        15: 5,
-        17: 6,
-    }
-    val = mapping[in_rec["INC_TYPE"]]
-    for i in range(7):
-        out_field = "INC_TYPE_" + str(i)
-        if i == val:
-            out_rec[out_field] = 1
-        else:
-            out_rec[out_field] = 0
-
-def feature_scale(out_rec, in_rec, field, min_val, max_val):
-    val = in_rec[field]
-    out_val = (val - min_val)/max_val
-    out_rec[field] = out_val
-
+from lib import nfirs_features
 
 if not os.path.isfile("./sqlite/normalized_incidents.sqlite"):
     if not os.path.isfile("./sqlite/clean_incidents.sqlite"):
@@ -56,27 +24,9 @@ if not os.path.isfile("./sqlite/normalized_incidents.sqlite"):
     # about 215k
     for clean_rec in input_table:
         normalized_rec = OrderedDict()
-        normalized_rec["PROP_LOSS"] = math.log(clean_rec["PROP_LOSS"]) # fix skew
-        one_hot_encode(normalized_rec, clean_rec, 'STATE_EXPENSE', 3)
-        one_hot_encode_incident_type(normalized_rec, clean_rec)
-        one_hot_encode(normalized_rec, clean_rec, 'AID', 4)
-        one_hot_encode(normalized_rec, clean_rec, 'HOUR_GROUP', 4)
-        feature_scale(normalized_rec, clean_rec, 'CONTROLLED_TIME', 60.0, 11280.0)
-        feature_scale(normalized_rec, clean_rec, 'CLEAR_TIME', 60.0, 20160.0)
-        feature_scale(normalized_rec, clean_rec, 'SUPPRESSION_APPARATUS', 1.0, 301.0)
-        feature_scale(normalized_rec, clean_rec, 'SUPPRESSION_PERSONNEL', 1.0, 67.0)
-        feature_scale(normalized_rec, clean_rec, 'PROP_VALUE', 1.0, 23733600.0)
-        normalized_rec["DETECTOR_FLAG"] = clean_rec["DETECTOR_FLAG"]
-        one_hot_encode(normalized_rec, clean_rec, 'HAZMAT_RELEASE', 5)
-        one_hot_encode(normalized_rec, clean_rec, 'MIXED_USE', 5)
-        normalized_rec["HEAT_SOURCE"] = clean_rec["HEAT_SOURCE"]
-        one_hot_encode(normalized_rec, clean_rec, 'IGNITION', 4)
-        one_hot_encode(normalized_rec, clean_rec, 'FIRE_SPREAD', 6)
-        one_hot_encode(normalized_rec, clean_rec, 'STRUCTURE_TYPE', 6)
-        one_hot_encode(normalized_rec, clean_rec, 'STRUCTURE_STATUS', 5)
-        feature_scale(normalized_rec, clean_rec, 'SQUARE_FEET', 1.0, 1690000.0)
-        one_hot_encode(normalized_rec, clean_rec, 'AES_SYSTEM', 4)
-
+        normalized_rec["PROP_LOSS"] = math.log(clean_rec["PROP_LOSS"])
+        normalized_rec = nfirs_features.normalize_features(clean_rec, normalized_rec)
+         # fix skew
         # Property Use and Not Residential and AREA_ORIGIN are no longer diverse,
         # excluding them from the final dataset
         output_table.insert(normalized_rec)
