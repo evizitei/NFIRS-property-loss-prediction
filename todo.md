@@ -36,7 +36,7 @@ scripts in the Data Preprocessing Section of the writeup
   discovery, and model tuning)
 [ ] perform sensitivity analysis
 [x] Check error rate against validation set
-[ ] Write up model validation and evalution section
+[ ] Write up model validation and evaluation section
 [ ] write up justification with comparison to benchmarks
 [ ] produce a visualization of the predicted values vs the validation set
 [ ] write up free-form visualization section
