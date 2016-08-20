@@ -162,10 +162,10 @@ print "$ %s" % round(predicted,2)
 
 print "MADE UP PARTIAL INPUT"
 input_hash = {
-  'STATE_EXPENSE': 2,
+  'STATE': 'CA',
   'INC_TYPE': 13,
   'AID': 2,
-  'HOUR_GROUP': 3
+  'ALARM': "112520110256"
 }
 print input_hash
 predicted = predict_property_loss(input_hash)
@@ -174,28 +174,28 @@ print "$ %s" % round(predicted,2)
 
 print "MADE UP FULL INPUT"
 input_hash = {
-  'STATE_EXPENSE': 2,
+  'STATE': 'CA',
   'INC_TYPE': 13,
-  'AID': 1,
-  'HOUR_GROUP': 4,
-  'CONTROLLED_TIME': 3000,
-  'CLEAR_TIME': 7000,
-  'SUPPRESSION_APPARATUS': 15,
-  'SUPPRESSION_PERSONNEL': 25,
-  'PROP_VALUE': 300000,
-  'DETECTOR_FLAG': 1,
-  'HAZMAT_RELEASE': 3,
-  'MIXED_USE': 3,
-  'PROPERTY_USE': 4,
-  'NOT_RESIDENTIAL': 0,
-  'AREA_ORIGIN': 2,
-  'HEAT_SOURCE': 3,
-  'IGNITION': 4,
-  'FIRE_SPREAD': 3,
-  'STRUCTURE_TYPE': 2,
-  'STRUCTURE_STATUS': 3,
-  'SQUARE_FEET': 5000,
-  'AES_SYSTEM': 2
+  'AID': 2,
+  'ALARM': "112520110256",
+  'INC_CONT': "112520110310",
+  'LU_CLEAR': "112520110500",
+  'SUP_APP': 20,
+  'SUP_PER': 40,
+  'PROP_VALUE': 180000,
+  'DET_ALERT': "2",
+  'HAZ_REL': 6,
+  'MIXED_USE': "58",
+  'PROP_USE': "7",
+  'NOT_RES': "1",
+  'AREA_ORIG': "4",
+  'HEAT_SOURC': "7",
+  'CAUSE_IGN': "4",
+  'FIRE_SPRD': "4",
+  'STRUC_TYPE': "4",
+  'STRUC_STAT': "6",
+  'TOT_SQ_FT': 5000,
+  'AES_PRES': "2"
 }
 print input_hash
 predicted = predict_property_loss(input_hash)

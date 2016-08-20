@@ -39,9 +39,6 @@ def normalize_ts(ts):
         string = "0" + string
     return string
 
-def map_ts_to_hour(ts):
-    return int(normalize_ts(ts)[8:10])
-
 def map_ts_to_month(ts):
     return int(normalize_ts(ts)[0:2])
 
