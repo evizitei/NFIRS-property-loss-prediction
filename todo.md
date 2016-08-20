@@ -31,10 +31,9 @@ visualizations in the project report
 scripts in the Data Preprocessing Section of the writeup
 [x] rework last transformation to normalize to log of residual and re-model/tune
 [x] write up benchmarks
-[ ] write up implementation section
-[ ] write up refinement (cover outlier removal, feature scaling, logarithmic
+[x] write up implementation section
+[x] write up refinement (cover outlier removal, feature scaling, logarithmic
   discovery, and model tuning)
-[ ] perform sensitivity analysis
 [x] Check error rate against validation set
 [ ] Write up model validation and evaluation section
 [ ] write up justification with comparison to benchmarks
@@ -45,5 +44,5 @@ scripts in the Data Preprocessing Section of the writeup
    with respect to use cases)
 [x] build a function that accepts un-scaled inputs and produces a un-logrithm'd
 prediction value
-[ ] build a notebook to compare un-logrithm'd
+[x]  compare un-logrithm'd
 input labels and output labels

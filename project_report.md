@@ -62,7 +62,7 @@ are not fires (Medical, hazmat, search and rescue, etc).
 I intend to reduce the set of data under consideration to just
 structural fire incidents, and extract/normalize just the features
 that are relevant to predicting property loss.  Then I intend
-to use the tensorflow framework to train a regression model
+to use the sklearn framework to train a regression model
 such that given a set of features for a target structure/incident,
 we can make a reasonable prediction of likely real property loss.
 
@@ -423,14 +423,149 @@ sqlite file "data/training_incidents.sqlite".
 
 ### Implementation
 
+##### Algorithm Selection
 
-In this section, the process for which metrics, algorithms, and techniques that you implemented for the given data will need to be clearly documented. It should be abundantly clear how the implementation was carried out, and discussion should be made regarding any complications that occurred during this process. Questions to ask yourself when writing this section:
+Before commiting to a model for this data, I did an experiment with a series
+of regression models available in sklearn to see out of the box which
+ones seemed to score well with minimal tuning. This work is documented
+in the jupyter notebook entitled "AlgorithmExploration" in the root directory.
+
+My expectation was that the ensemble methods available for regression (particularly
+  those that dependend predominantly on decision trees) would
+perform far better than naive models because much of the input is categorical
+rather than continuous, but I didn't want to jump to conclusions like
+that without the data to support it.
+
+Thanks to the preprocessing covered in the previous section, prep for this
+exploratory pass was just loading the records from sqlite and
+shredding them into an array of input vectors and an array of property loss results
+(with corresponding indexes).  I then leveraged the test/train split tools
+available in sklearn to split both arrays (inputs and results) into a training and test set
+so that the model would be validated against data it hadn't seen yet.
+
+Then I trained a series of models against the training dataset (inputs and results).
+First in line was a dummy model, in order to see what a random regression would look
+like and get a baseline r-squared score for no fit, and a naive linear regression
+to show the simplest model and how well it could fit a line to the input data.
+Although several metrics were evaluated to see how the models were performing,
+I've included only r-squared scores here to keep the summary concise (other
+  fit-scoring function outputs for each model can be seen in the notebook including
+  Mean Squared Error, Mean Absolute Error, and Median Absolute Error).
+
+| Model             | r-squared score    |
+|___________________|____________________|
+| Dummy             | -3.33379834123e-05 |
+| Linear            |  0.347285517809    |
+| Ridge             |  0.34736410869     |
+| Lasso             |  0.154652051569    |
+| ElasticNet        |  0.162604152044    |
+| SGD               |  0.346010609807    |
+| Bayseian          |  0.347298315639    |
+| PassiveAggressive | -0.217769372351    |
+| RANSAC            | -7.74110759857     |
+| TheilSen          |  0.281932204654    |
+| DecisionTree      |  0.416033472511    |
+| ExtraTree         |  0.26054278424     |
+| SVM               |  0.334870023831    |
+| AdaBoost          |  0.407018865231    |
+| Bagging           |  0.594127375415    |
+| ExtraTreesEnsemble|  0.511182041209    |
+| GradientBoost     |  0.63351895371     |
+| RandomForest      |  0.618601161064    |
+
+Something to point out here is that the first time I went through this exercise
+the scores were much lower, with the top r-squared score not being above 0.5.
+I was surprised at this, but then realized that I had not yet performed
+the logarithmic transformation on the target variable, and thus the distribution was
+skewed right.  The transformation produced a normal-ish distribution, and rerunning
+the algorithm exploration notebook produced the data above.  Out of this
+exercise, I selected Bagging, GradientBoost, and RandomForest as algorithms
+for more parameter tuning to see how they performed
+
 - _Is it made clear how the algorithms and techniques were implemented with the given datasets or input data?_
 - _Were there any complications with the original metrics or techniques that required changing prior to acquiring a solution?_
 - _Was there any part of the coding process (e.g., writing complicated functions) that should be documented?_
 
-### Refinement
-In this section, you will need to discuss the process of improvement you made upon the algorithms and techniques you used in your implementation. For example, adjusting parameters for certain models to acquire improved solutions would fall under the refinement category. Your initial and final solutions should be reported, as well as any significant intermediate results as necessary. Questions to ask yourself when writing this section:
+##### Refinement
+
+At this point I had 3 candidate models which seemed to perform quite well with
+little tuning. In order to find the hyperparameters for each model with the best
+score for cross validation within the training set (default scoring function),
+I made use of the GridSearchCV class within sklearn.  This involved selecting
+potential parameter grids for each model and running the grid search over
+them to select the parameter combination that scored the best error rate
+for the provided training data.
+
+The work described here was done in the "bin/tune_params" script.  By running
+through combinations of parameters exhaustively I was able to obtain
+a best score for each of the 3 models, and then compare them for final model
+selection.
+
+For the RandomForestRegressor, the input parameter grid looked like this:
+
+```
+{
+  'min_samples_split': [5,9],
+  'min_samples_leaf': [1,3,5],
+  'n_estimators': [10,100,250],
+  'max_depth': [2,3,5]
+}
+```
+
+Remember, this means train a model for every combination of params here
+(2*3*3*3 models) and comparing the scores; this took about an hour per model.
+The top scoring Random Forest model produced a score of 0.575212520004.
+
+For the BaggingRegressor, the input parameter grid looked like this:
+
+```
+{
+  'max_features': [1.0,0.75,0.5],
+  'n_estimators': [10,25,50],
+  'max_samples': [1.0,0.75,0.5]
+}
+```
+
+And the top scoring Bagging model got 0.632741581369
+
+For the GradientBoostingRegressor the input parameter grid looked like this:
+
+```
+{
+  'min_samples_split': [5,9],
+  'min_samples_leaf': [1,3,5],
+  'n_estimators': [100,250],
+  'max_depth': [2,3,5]
+}
+```
+
+And the top scoring GradientBoostingRegressor got 0.636959489576.
+
+This means that Gradient boost was technically the highest scoring model
+after tuning (even though Bagging is so close as to be nearly indistinguishable),
+and it's final input parameters for the best score turned out to be as follows:
+
+alpha=0.9
+init=None
+learning_rate=1.0
+loss='ls'
+max_depth=3
+max_features=None
+max_leaf_nodes=None
+min_samples_leaf=5
+min_samples_split=5
+min_weight_fraction_leaf=0.0
+n_estimators=100
+presort='auto'
+random_state=None
+subsample=1.0
+verbose=0
+warm_start=False
+
+At this point I took the Gradient Boosting Regressor on to validation with
+the 30,000 reserved data points to make sure it wasn't overfit to the data
+in the test/train split.
+
 - _Has an initial solution been found and clearly reported?_
 - _Is the process of improvement clearly documented, such as what techniques were used?_
 - _Are intermediate and final solutions clearly reported as the process is improved?_
@@ -440,6 +575,13 @@ In this section, you will need to discuss the process of improvement you made up
 _(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
+
+EVS 0.676676560513
+MAE 0.809925635314
+MSE 1.43182316638
+MedAE 0.534865737451
+r^2 0.676676560513
+
 In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
 - _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
 - _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_

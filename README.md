@@ -5,7 +5,7 @@ See project_report.md for project overview
 ### Requirements
 *make sure to pip install these all before running anything*
 
-tensorflow (https://www.tensorflow.org/)
+sklearn (http://scikit-learn.org/)
 dbfread (https://dbfread.readthedocs.io)
 dataset (https://dataset.readthedocs.io/en/latest/)
 
