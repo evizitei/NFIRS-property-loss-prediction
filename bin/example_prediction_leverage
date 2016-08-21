@@ -180,8 +180,8 @@ input_hash = {
   'ALARM': "112520110256",
   'INC_CONT': "112520110310",
   'LU_CLEAR': "112520110500",
-  'SUP_APP': 20,
-  'SUP_PER': 40,
+  'SUP_APP': 8,
+  'SUP_PER': 24,
   'PROP_VALUE': 180000,
   'DET_ALERT': "2",
   'HAZ_REL': 6,
@@ -200,4 +200,46 @@ input_hash = {
 print input_hash
 predicted = predict_property_loss(input_hash)
 print "PREDICTION"
+print "$ %s" % round(predicted,2)
+
+print "SENSITIVITY ANALYSIS , normal changes"
+
+input_hash['ALARM'] = "112520110956",
+input_hash['INC_CONT'] = "112520111010",
+input_hash['LU_CLEAR'] = "112520111100"
+print "Alarm to middle of morning"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+input_hash['SUP_APP'] = 9
+input_hash['SUP_PER'] = 27
+print "increase responding units"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+input_hash['PROP_VALUE'] = 160000
+print "decrease property value by 20 grand"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+input_hash['HAZ_REL'] = 5
+print "change hazmat release type"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+input_hash['TOT_SQ_FT'] = 4000
+print "knock 20 percent off of square footage"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+print "SENSITIVITY ANALYSIS , tiny changes"
+
+input_hash['TOT_SQ_FT'] = 4100
+print "add 100 square feet"
+predicted = predict_property_loss(input_hash)
+print "$ %s" % round(predicted,2)
+
+input_hash['PROP_VALUE'] = 161000
+print "change property value by $1000"
+predicted = predict_property_loss(input_hash)
 print "$ %s" % round(predicted,2)

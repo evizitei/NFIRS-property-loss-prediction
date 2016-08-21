@@ -281,7 +281,12 @@ testing the model.  I expect that for any random set of 2 records, the model
 should order their property damage predictions correctly greater than 75% of
 the time (that is, it's more important that the property damage values be in the
 correct order than it is that they be precise with respect to the absolute correct values).
-I'll be validating this as part of the final model evaluation with 100 random samplings of 2 records.
+I'll be validating this as part of the final model evaluation with 100 random samplings of 2
+records.  It's also more important that records that are farther apart be ordered correctly
+than ones closer together.  Therefore my other expectation is that for every
+validation trial, the average prediction target difference for accurate ordering
+is larger than the average prediction target difference for inaccurately OrderedDict
+pairs.
 
 - _Has some result or value been provided that acts as a benchmark for measuring performance?_
 - _Is it clear how this result or value was obtained (whether by data or by hypothesis)?_
@@ -406,8 +411,8 @@ More preprocessing was still necessary, however, because categorical
 input dimensions were still represented by integers at this point and
 continuous data inputs had quite variable scales (apparatus might be
 anywhere from 2 to 100, but square feet might be 3000 to several
-hundred thousand) which could have an inadvertan weighting impact on
-how signficiantly each input is considered.  For categorical inputs,
+hundred thousand) which could have an inadvertent weighting impact on
+how significantly each input is considered.  For categorical inputs,
 I used 1-hot encoded vectors to make each possible category a binary
 dimension on it's own.  For continuous inputs, I used the min/max of
 their distribution to transform their values to a floating point
@@ -592,14 +597,152 @@ MSE 1.43182316638
 MedAE 0.534865737451
 r^2 0.676676560513
 
-In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
+After the data preprocessing there were about 30,000 records reserved to use
+once training was fully complete to validate the model against data it
+had never seen before (even in test sets).  The plan was to compare r^2 scores and
+MSE (Mean Squared Error) between the results obtained in the model selection
+and tuning passes and confirm that they weren't a result of overfitting.
+
+In model selection the Gradient Boost model with no tuning turned up
+a Mean Squared Error of 1.634.  This is difficult to put in context because
+it's the squared difference between two logarithmically transformed values.
+For comparison, the dummy (random) regression model produced an MSE of
+4.436, and the naive linear regression scored an MSE of 2.895.  Looking at R^2
+values, they're similarly ordered.  Dummy: -3.334, Linear: 0.347,
+GradientBoost: 0.634.  In both metrics you can see that gradient boost gives
+meaningful (non-random) information, and performs better than a naive model.
+
+After tuning the model, Gradient Boost with ideal parameters produced
+an r^2 value of 0.637 (not very much better, really, so tuning didn't gain too much
+according to r^2).
+
+The first question is whether that has been overfit to the training/test data or not.
+In the model evaluation work done in the "ModelValidation" notebook, I found
+a Mean Squared Error of 1.431 and an R^2 score of 0.677.  This would appear to indicate
+both that tuning _was_ meaningful (MSE has come down) and that the model
+generalizes well to unseen data (MSE and R^2 both are pretty close to original
+  values, better in fact).
+
+Next we want to ask whether the model is robust to small changes in inputs.
+Most of the input data is categorical, so it's hard to decide what "small"
+changes are for those.  I did some input manipulation in the script
+"./bin/example_prediction_leverage" to make sure that changing categories
+didn't produce extreme differences.  Here's the output from that portion
+of the script:
+
+```
+MADE UP FULL INPUT
+{'AES_PRES': '2', 'AREA_ORIG': '4', 'ALARM': '112520110256', 'MIXED_USE': '58', 'AID': 2, 'HEAT_SOURC': '7', 'FIRE_SPRD': '4', 'HAZ_REL': 6, 'STRUC_STAT': '6', 'INC_TYPE': 13, 'SUP_APP': 8, 'NOT_RES': '1', 'PROP_USE': '7', 'DET_ALERT': '2', 'CAUSE_IGN': '4', 'STATE': 'CA', 'STRUC_TYPE': '4', 'SUP_PER': 24, 'INC_CONT': '112520110310', 'TOT_SQ_FT': 5000, 'LU_CLEAR': '112520110500', 'PROP_VALUE': 180000}
+PREDICTION
+$ 4628.92
+SENSITIVITY ANALYSIS , normal changes
+Alarm to middle of morning
+$ 5059.3
+increase responding units
+$ 6587.37
+decrease property value by 20 grand
+$ 6878.79
+change hazmat release type
+$ 13961.78
+knock 20 percent off of square footage
+$ 11846.7
+```
+
+None of these changes from prediction to prediction seem unreasonable, though
+that's a very subjective judgement.  For the continuous fields, I did perform
+small changes and found they impacted the output not at all:
+
+```
+knock 20 percent off of square footage
+$ 11846.7
+SENSITIVITY ANALYSIS , tiny changes
+add 100 square feet
+$ 11846.7
+change property value by $1000
+$ 11846.7
+```
+
+This is because decision trees factor heavily into the model, and they are
+going to find threshold values to change their output weights at.  This
+seems to indicate the model is robust to tiny changes in input.
+
 - _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
 - _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
 - _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
 - _Can results found from the model be trusted?_
 
 ### Justification
-In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
+
+There are two subjects to address here.  First, did the final model perform
+well relative to the dummy (random) regression?  Yes, most definitey, and this
+is discussed in the Model Evaluation and Validation section above.
+
+The more important subject here is whether this model meets expectations
+for being used in some of the use cases described at the beginning of this
+report.  The benchmark established in the "Benchmark" section above
+was that for any random set of 2 records, the model
+should order their property damage predictions correctly greater than 75% of
+the time, and that the average prediction target difference for accurate ordering
+is larger than the average prediction target difference for inaccurately OrderedDict
+pairs.  This expectation is validated in the "ModelValidation" notebook where
+I took 10 passes through the validation process, each time selecting 100
+pairs of data points and seeing if the model correctly ordered their predictions
+(predicted the correct point of the 2 to have the higher property damage value).
+I also stored the difference between the predicted value and the actual damage
+value (in dollars, not logarithmic value) so that I could get the average data
+point difference for the correctly ordered pairs and the incorrectly ordered pairs.
+That data is included here:
+
+```
+TRIAL 1
+CORRECT 74, AVG DELTA 11179.5675676
+INCORRECT 26, AVG DELTA 5272.69230769
+------------
+TRIAL 2
+CORRECT 78, AVG DELTA 12798.0769231
+INCORRECT 22, AVG DELTA 8534.04545455
+------------
+TRIAL 3
+CORRECT 85, AVG DELTA 14021.6352941
+INCORRECT 15, AVG DELTA 3511.06666667
+------------
+TRIAL 4
+CORRECT 77, AVG DELTA 13019.4805195
+INCORRECT 23, AVG DELTA 5962.60869565
+------------
+TRIAL 5
+CORRECT 81, AVG DELTA 11966.8148148
+INCORRECT 19, AVG DELTA 4231.52631579
+------------
+TRIAL 6
+CORRECT 77, AVG DELTA 14181.9480519
+INCORRECT 23, AVG DELTA 4515.2173913
+------------
+TRIAL 7
+CORRECT 79, AVG DELTA 13047.4556962
+INCORRECT 21, AVG DELTA 7590.47619048
+------------
+TRIAL 8
+CORRECT 80, AVG DELTA 11675.6
+INCORRECT 20, AVG DELTA 3385.0
+------------
+TRIAL 9
+CORRECT 83, AVG DELTA 16899.9518072
+INCORRECT 17, AVG DELTA 6104.70588235
+------------
+TRIAL 10
+CORRECT 78, AVG DELTA 10835.1794872
+INCORRECT 22, AVG DELTA 2274.09090909
+------------
+```
+
+We can see in the above data set that both expectations are met.  In each trial,
+greater than 75% of the pairs are ordered correctly; and in each trial the average
+delta for the correctly ordered pairs was significantly greater than the average
+delta for the incorrectly ordered pairs.  This indicates to me that based on
+the constraints stated in the problem description, this model is sufficient
+to act in those capacities.
+
 - _Are the final results found stronger than the benchmark result reported earlier?_
 - _Have you thoroughly analyzed and discussed the final solution?_
 - _Is the final solution significant enough to have solved the problem?_

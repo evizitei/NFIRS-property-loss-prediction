@@ -35,8 +35,8 @@ scripts in the Data Preprocessing Section of the writeup
 [x] write up refinement (cover outlier removal, feature scaling, logarithmic
   discovery, and model tuning)
 [x] Check error rate against validation set
-[ ] Write up model validation and evaluation section
-[ ] write up justification with comparison to benchmarks
+[x] Write up model validation and evaluation section
+[x] write up justification with comparison to benchmarks
 [ ] produce a visualization of the predicted values vs the validation set
 [ ] write up free-form visualization section
 [ ] write up project Reflection
