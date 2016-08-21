@@ -275,6 +275,14 @@ R - Squared:           0.35
 The results here are covered in detail in the AlgorithmExploration
 notebook.
 
+Since the use cases described in the project plan are based upon prioritization
+between records more than precision, I have another benchmark in mind for
+testing the model.  I expect that for any random set of 2 records, the model
+should order their property damage predictions correctly greater than 75% of
+the time (that is, it's more important that the property damage values be in the
+correct order than it is that they be precise with respect to the absolute correct values).
+I'll be validating this as part of the final model evaluation with 100 random samplings of 2 records.
+
 - _Has some result or value been provided that acts as a benchmark for measuring performance?_
 - _Is it clear how this result or value was obtained (whether by data or by hypothesis)?_
 
@@ -575,6 +583,8 @@ in the test/train split.
 _(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
+
+
 
 EVS 0.676676560513
 MAE 0.809925635314
