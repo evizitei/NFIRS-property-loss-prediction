@@ -39,7 +39,7 @@ scripts in the Data Preprocessing Section of the writeup
 [x] write up justification with comparison to benchmarks
 [x] produce a visualization of the predicted values vs the validation set
 [x] write up free-form visualization section
-[ ] write up project Reflection
+[x] write up project Reflection
 [ ] Identify and document possible improvements to this model (particularly
    with respect to use cases)
 [x] build a function that accepts un-scaled inputs and produces a un-logrithm'd

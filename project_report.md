@@ -811,6 +811,30 @@ Although the learning algorithms themselves are the most intellectually interest
 part of the whole process, learning the data and massaging it into a useful format
 is really where most of my efforts were allocated.
 
+Another notable item was the points at which I ran into problems and had to go
+back and fix a transformation in pre-processing or something similar.  For example,
+it wasn't until I was validating the model that I though very much about the distribution
+of the target variable.  Seeing it cluster so far towards the origin made me concerned
+that regression algorithms would be making bad assumptions about the distribution.
+
+I went back to the AlgorithmExploration notebook and transformed the data in place
+to log-of-target and found a 0.1 jump on average in R-squared scores, and so I
+had to go back to the "normalize" step in my data transformation pipeline
+and re-run the steps from there forward to take that preferred coordination into
+account.  This made me _very_ glad that I had kept artifacts from each transformation
+along the way; rather than having to run the whole preprocessing pipeline from
+scratch, I was able to pick up at the first point in the pipeline that cared
+about the particular data shape I was trying to impact and just re-run steps
+from there forward.  I'll plan on continuing to use this pattern in future
+projects.
+
+Based on the rather lenient benchmarks I defined to represent success for the
+use cases I was considering approaching this problem for, I'm pretty satisfied that
+the model as it is would solve it well enough for general application.  I still
+have some ideas for how to improve the model (see improvement section below)
+and if I were packaging this model into a software solution that was taking on
+real production subscribers, then I'd want to pursue some of those avenues first.
+
 - _Have you thoroughly summarized the entire process you used for this project?_
 - _Were there any interesting aspects of the project?_
 - _Were there any difficult aspects of the project?_
