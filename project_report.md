@@ -789,7 +789,28 @@ between the two, and that it sticks reasonably close to y = x.
 - _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Reflection
-In this section, you will summarize the entire end-to-end problem solution and discuss one or two particular aspects of the project you found interesting or difficult. You are expected to reflect on the project as a whole to show that you have a firm understanding of the entire process employed in your work. Questions to ask yourself when writing this section:
+
+There are many observations that come to mind when thinking back over the course
+of this project. The loudest one in my mind is that data cleaning and feature
+selection is by far where most of my time was spent.  To break the project into
+stages, I would structure it thusly (in order with percentage of time spent there):
+
+* Project Ideation                   (4%)
+* Dataset selection                  (3%)
+* Feature exploration               (18%)
+* Feature selection                 (12%)
+* Data cleaning                     (15%)
+* Data Normalization                (15%)
+* Model exploration                  (8%)
+* Model selection                    (2%)
+* Model tuning                       (6%)
+* Model verification and debugging  (10%)
+* Project Writeup                    (7%)
+
+Although the learning algorithms themselves are the most intellectually interesting
+part of the whole process, learning the data and massaging it into a useful format
+is really where most of my efforts were allocated.
+
 - _Have you thoroughly summarized the entire process you used for this project?_
 - _Were there any interesting aspects of the project?_
 - _Were there any difficult aspects of the project?_
