@@ -46,4 +46,4 @@ scripts in the Data Preprocessing Section of the writeup
 prediction value
 [x]  compare un-logrithm'd
 input labels and output labels
-[ ] produce a pdf report
+[x] produce a pdf report

@@ -1,7 +1,7 @@
 # NFIRS Property Loss Prediction Model
 ## Machine Learning Engineer Nanodegree
 Ethan C Vizitei
-August 31, 2016
+August 22, 2016
 
 ## I. Firefighting and property damage
 
@@ -49,8 +49,6 @@ benefit from being continually adjusted for inflation and augmented
 in an ongoing manner with additional data from each year as data is added to
 the NFIRS database.
 
-- _Has an overview of the project been provided, such as the problem domain, project origin, and related datasets or input data?_
-- _Has enough background information been given so that an uninformed reader would understand the problem domain and following problem statement?_
 
 ### Intended Approach
 
@@ -80,9 +78,7 @@ we can make a reasonable prediction of likely real property loss.
   extra fire trucks and personnel) are immediately dispatched rather
   than waiting for the first engine to arrive and size up the scene.
 
-- _Is the problem statement clearly defined? Will the reader understand what you are expecting to solve?_
-- _Have you thoroughly discussed how you will attempt to solve the problem?_
-- _Is an anticipated solution clearly defined? Will the reader understand what results you are looking for?_
+
 
 ### Cost function and Validation
 
@@ -97,12 +93,9 @@ written as:
   ![MSE][https://wikimedia.org/api/rest_v1/media/math/render/svg/67b9ac7353c6a2710e35180238efe54faf4d9c15]
 
 Questions to ask yourself when writing this section:
-- _Are the metrics you’ve chosen to measure the performance of your models clearly discussed and defined?_
-- _Have you provided reasonable justification for the metrics chosen based on the problem and solution?_
 
 
 ## II. Analysis
-_(approx. 2-4 pages)_
 
 ### Data Exploration
 
@@ -126,6 +119,7 @@ dollar value loss of property destroyed in a given emergency incident.  After
 trimming outliers (there are several high-dollar value losses that really skew
   the data over all), here's what the distribution looks like:
 
+```
 | stat  | PROP_LOSS $ value |
 | count |  196574.000000    |
 | mean  |    8914.580748    |
@@ -135,6 +129,7 @@ trimming outliers (there are several high-dollar value losses that really skew
 | 50%   |    3000.000000    |
 | 75%   |   10000.000000    |
 | max   |   60000.000000    |
+```
 
 We can see that even after chopping off a lot of high value outliers, the data
 skews heavily to the low end, with the median being $3000 even though the mean
@@ -154,6 +149,7 @@ some square footage, but not all incident reports include it.  Out of nearly
 200000 records 106645 have no square foot value included.  The rest are
 distributed like this:
 
+```
 | field | SQ_FEET  |
 | count |    87153 |
 | mean  |    10291 |
@@ -163,16 +159,13 @@ distributed like this:
 | 50%   |     1200 |
 | 75%   |     1944 |
 | max   | 10000000 |
+```
 
 There are several fields like this, with high outliers and skewed distributions,
 and a lot of missing data.  The plan for these numeric fields is to replace
 missing values with the median value of the dataset to keep a lot of 0s and -1s
 from throwing off the relationship, and trimming extreme outliers.
 
-- _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
-- _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
-- _If a dataset is **not** present for this problem, has discussion been made about the input space or input data for your problem?_
-- _Are there any abnormalities or characteristics about the input space or dataset that need to be addressed? (categorical variables, missing values, outliers, etc.)_
 
 ### Exploratory Visualization
 
@@ -192,9 +185,6 @@ the same data run through a logarithmic transform first:
 
 ![Property Loss Log](images/PropLossLogDistribution.png)
 
-- _Have you visualized a relevant characteristic or feature about the dataset or input data?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Algorithms and Techniques
 
@@ -212,11 +202,11 @@ descent, which in this case is by following a given loss function
 and trying to minimize it with each step (I use "least squares" in
 this project).
 
-This algorithm has several hyperparameters that I tuned:
+This algorithm has several hyper-parameters that I tuned:
 
 *loss function*: Although I chose to use least squares, it's also
 possible to use absolute error or a couple other options that are more
-resiliant to outliers.  In this case I removed the significant
+resilient to outliers.  In this case I removed the significant
 outliers from the dataset up front, and my exhaustive grid search
 yielded the best results with least squares.
 
@@ -240,15 +230,12 @@ how the model did out of the box, then during tuning I built a grid of
 possible parameter combinations and ran them exhaustively through all
 combinations to see which combination yielded the best performing learner.
 
-- _Are the algorithms you will use, including any default variables/parameters in the project clearly defined?_
-- _Are the techniques to be used thoroughly discussed and justified?_
-- _Is it made clear how the input data or datasets will be handled by the algorithms and techniques chosen?_
 
 ### Benchmark
 
 I used a random dummy regression to produce a baseline set of scoring
 metrics in order to make sure that any results I obtained were
-signficant.  When run over the training set of data and then predicting
+significant.  When run over the training set of data and then predicting
 against the test set, the Dummy learner performed as follows:
 
 ```
@@ -288,12 +275,7 @@ validation trial, the average prediction target difference for accurate ordering
 is larger than the average prediction target difference for inaccurately OrderedDict
 pairs.
 
-- _Has some result or value been provided that acts as a benchmark for measuring performance?_
-- _Is it clear how this result or value was obtained (whether by data or by hypothesis)?_
-
-
 ## III. Methodology
-_(approx. 3-5 pages)_
 
 ### Data Preprocessing
 
@@ -430,9 +412,6 @@ can be seen in the script at "bin/split_off_test_set".
 The records ready for training were now available in the
 sqlite file "data/training_incidents.sqlite".
 
-- _If the algorithms chosen require preprocessing steps like feature selection or feature transformations, have they been properly documented?_
-- _Based on the **Data Exploration** section, if there were abnormalities or characteristics that needed to be addressed, have they been properly corrected?_
-- _If no preprocessing is needed, has it been made clear why?_
 
 ### Implementation
 
@@ -495,9 +474,6 @@ the algorithm exploration notebook produced the data above.  Out of this
 exercise, I selected Bagging, GradientBoost, and RandomForest as algorithms
 for more parameter tuning to see how they performed
 
-- _Is it made clear how the algorithms and techniques were implemented with the given datasets or input data?_
-- _Were there any complications with the original metrics or techniques that required changing prior to acquiring a solution?_
-- _Was there any part of the coding process (e.g., writing complicated functions) that should be documented?_
 
 ##### Refinement
 
@@ -579,23 +555,11 @@ At this point I took the Gradient Boosting Regressor on to validation with
 the 30,000 reserved data points to make sure it wasn't overfit to the data
 in the test/train split.
 
-- _Has an initial solution been found and clearly reported?_
-- _Is the process of improvement clearly documented, such as what techniques were used?_
-- _Are intermediate and final solutions clearly reported as the process is improved?_
-
 
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
 
-
-
-EVS 0.676676560513
-MAE 0.809925635314
-MSE 1.43182316638
-MedAE 0.534865737451
-r^2 0.676676560513
 
 After the data preprocessing there were about 30,000 records reserved to use
 once training was fully complete to validate the model against data it
@@ -666,10 +630,6 @@ This is because decision trees factor heavily into the model, and they are
 going to find threshold values to change their output weights at.  This
 seems to indicate the model is robust to tiny changes in input.
 
-- _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
-- _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
-- _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
-- _Can results found from the model be trusted?_
 
 ### Justification
 
@@ -743,13 +703,8 @@ delta for the incorrectly ordered pairs.  This indicates to me that based on
 the constraints stated in the problem description, this model is sufficient
 to act in those capacities.
 
-- _Are the final results found stronger than the benchmark result reported earlier?_
-- _Have you thoroughly analyzed and discussed the final solution?_
-- _Is the final solution significant enough to have solved the problem?_
-
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
 
 ### Free-Form Visualization
 
@@ -784,9 +739,6 @@ the cloud:
 In both charts you should be able to see the suggestion of a linear relationship
 between the two, and that it sticks reasonably close to y = x.
 
-- _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Reflection
 
@@ -835,11 +787,6 @@ have some ideas for how to improve the model (see improvement section below)
 and if I were packaging this model into a software solution that was taking on
 real production subscribers, then I'd want to pursue some of those avenues first.
 
-- _Have you thoroughly summarized the entire process you used for this project?_
-- _Were there any interesting aspects of the project?_
-- _Were there any difficult aspects of the project?_
-- _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
-
 ### Improvement
 
 The first and most obvious way to improve this model is to start taking in more data.
@@ -867,19 +814,3 @@ that neural networks may be overkill for regression problems).  I would care
 more about precision in this case (getting the category right would be very important),
 but it's also a softer target to hit.   This improvement would require
 soliciting feedback from those with more domain expertise than I, though.
-
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
-
------------
-
-**Before submitting, ask yourself. . .**
-
-- Does the project report you’ve written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Analysis** and **Methodology**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your analysis, methods, and results?
-- Have you properly proof-read your project report to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
-- Is the code that implements your solution easily readable and properly commented?
-- Does the code execute without error and produce results similar to those reported?
