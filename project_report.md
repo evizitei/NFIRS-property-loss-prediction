@@ -695,44 +695,44 @@ That data is included here:
 
 ```
 TRIAL 1
-CORRECT 74, AVG DELTA 11179.5675676
-INCORRECT 26, AVG DELTA 5272.69230769
+CORRECT 84, AVG DELTA 11276.3690476
+INCORRECT 16, AVG DELTA 6631.25
 ------------
 TRIAL 2
-CORRECT 78, AVG DELTA 12798.0769231
-INCORRECT 22, AVG DELTA 8534.04545455
+CORRECT 76, AVG DELTA 13588.9605263
+INCORRECT 24, AVG DELTA 4934.04166667
 ------------
 TRIAL 3
-CORRECT 85, AVG DELTA 14021.6352941
-INCORRECT 15, AVG DELTA 3511.06666667
+CORRECT 83, AVG DELTA 16471.9156627
+INCORRECT 17, AVG DELTA 7952.88235294
 ------------
 TRIAL 4
-CORRECT 77, AVG DELTA 13019.4805195
-INCORRECT 23, AVG DELTA 5962.60869565
+CORRECT 85, AVG DELTA 14023.7647059
+INCORRECT 15, AVG DELTA 5026.66666667
 ------------
 TRIAL 5
-CORRECT 81, AVG DELTA 11966.8148148
-INCORRECT 19, AVG DELTA 4231.52631579
+CORRECT 81, AVG DELTA 14575.6790123
+INCORRECT 19, AVG DELTA 7829.68421053
 ------------
 TRIAL 6
-CORRECT 77, AVG DELTA 14181.9480519
-INCORRECT 23, AVG DELTA 4515.2173913
+CORRECT 81, AVG DELTA 15550.7777778
+INCORRECT 19, AVG DELTA 5907.89473684
 ------------
 TRIAL 7
-CORRECT 79, AVG DELTA 13047.4556962
-INCORRECT 21, AVG DELTA 7590.47619048
+CORRECT 81, AVG DELTA 14842.0864198
+INCORRECT 19, AVG DELTA 7233.21052632
 ------------
 TRIAL 8
-CORRECT 80, AVG DELTA 11675.6
-INCORRECT 20, AVG DELTA 3385.0
+CORRECT 84, AVG DELTA 12543.3690476
+INCORRECT 16, AVG DELTA 7277.8125
 ------------
 TRIAL 9
-CORRECT 83, AVG DELTA 16899.9518072
-INCORRECT 17, AVG DELTA 6104.70588235
+CORRECT 84, AVG DELTA 10724.702381
+INCORRECT 16, AVG DELTA 7703.0625
 ------------
 TRIAL 10
-CORRECT 78, AVG DELTA 10835.1794872
-INCORRECT 22, AVG DELTA 2274.09090909
+CORRECT 85, AVG DELTA 13098.0117647
+INCORRECT 15, AVG DELTA 7410.0
 ------------
 ```
 
@@ -752,7 +752,38 @@ to act in those capacities.
 _(approx. 1-2 pages)_
 
 ### Free-Form Visualization
-In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
+
+Although the R-squared scores and benchmarks look good for the model, it's
+also useful to get an intuitive feeling for how well the model predicts the
+actual values for unseen data.  For that reason in the notebook named
+ResultVisualization I took some time to look at the distribution of predictions
+with respect to the actual values to see how well the correlated visually.
+
+To do this I built a function that takes in the actual labels for the 30,000
+record validation set and the predicted labels from the persisted model,
+and seven times generated a list of 100 indexes at random to plot together
+to see how they lined up.  This produced 7 graphs (all visible in that
+  notebook) which show how well the predictions and actual values match.
+
+If the match were perfect, then the scatterplot would be just a straight line
+of points traveling along the line defined by y = x.  If the predictions were
+poor, the plots would look aimless, or at least not very much like a line of
+best fit would travel along y = x.
+
+All the generated plots looked very similar to this one:
+
+![Sparse Evaluation](images/EvaluationVisualization.png)
+
+And the very last plot I generated had 1000 data points instead of 100.  
+It's harder to get a feel for individual outliers, but it's clear how dense
+the predictions are with respect to the actual values in the thickest part of
+the cloud:
+
+![Dense Evaluation](images/DenseModelVisualization.png)
+
+In both charts you should be able to see the suggestion of a linear relationship
+between the two, and that it sticks reasonably close to y = x.
+
 - _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
 - _Is the visualization thoroughly analyzed and discussed?_
 - _If a plot is provided, are the axes, title, and datum clearly defined?_

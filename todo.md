@@ -37,8 +37,8 @@ scripts in the Data Preprocessing Section of the writeup
 [x] Check error rate against validation set
 [x] Write up model validation and evaluation section
 [x] write up justification with comparison to benchmarks
-[ ] produce a visualization of the predicted values vs the validation set
-[ ] write up free-form visualization section
+[x] produce a visualization of the predicted values vs the validation set
+[x] write up free-form visualization section
 [ ] write up project Reflection
 [ ] Identify and document possible improvements to this model (particularly
    with respect to use cases)
