@@ -841,7 +841,33 @@ real production subscribers, then I'd want to pursue some of those avenues first
 - _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
 
 ### Improvement
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
+
+The first and most obvious way to improve this model is to start taking in more data.
+I only made use of the NFIRS data from 2011 because it was easy to get ahold of
+as a unit for general research, but NFIRS has data for every year since the 70s
+and up until this year, and it's possible I could make use of all of it to further
+tune the precision of the model.  Some cleaning would have to be done to account
+for inflation, since property values can change significantly over a few
+decades (probably pick yearly inflation numbers and normalize all data
+to 2016 dollars).  I would also want to find some way to weight more recent
+data points because fire behavior is different in structures built recently
+with open floor plans and lightweight construction materials.
+
+It's also possible that regression isn't the right way to model this problem for
+general application.  In thinking about what I would really want to get out of
+this system as a first due officer or a dispatcher, I'd probably be mapping these
+projected numbers to tiered thresholds that I'd call "no big deal", "kinda problematic",
+"absolutely catastrophic", etc.  We could actually do one better for them and
+save a mental step by categorizing these damage levels (perhaps by absolute dollar
+value or by dollar value as a ratio to property value), and having the label
+output from the model be a category rather than a specific dollar figure.  This
+turns the whole thing into a classification problem, and at that point I might consider
+leveraging tensorflow and building a deep neural network (I'm given to understand
+that neural networks may be overkill for regression problems).  I would care
+more about precision in this case (getting the category right would be very important),
+but it's also a softer target to hit.   This improvement would require
+soliciting feedback from those with more domain expertise than I, though.
+
 - _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
 - _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
 - _If you used your final solution as the new benchmark, do you think an even better solution exists?_

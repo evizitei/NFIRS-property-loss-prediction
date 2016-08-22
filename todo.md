@@ -40,9 +40,10 @@ scripts in the Data Preprocessing Section of the writeup
 [x] produce a visualization of the predicted values vs the validation set
 [x] write up free-form visualization section
 [x] write up project Reflection
-[ ] Identify and document possible improvements to this model (particularly
+[x] Identify and document possible improvements to this model (particularly
    with respect to use cases)
 [x] build a function that accepts un-scaled inputs and produces a un-logrithm'd
 prediction value
 [x]  compare un-logrithm'd
 input labels and output labels
+[ ] produce a pdf report
