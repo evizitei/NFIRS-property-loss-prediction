@@ -54,7 +54,7 @@ input labels and output labels
 [x] Define R-squared metric in the metrics section
 [x] include a MSE equation directly in the project report
 [x] clarify why only 2011 data was included in the data exploration section
-[ ] add axes labels for data exploration visualizations
+[x] add axes labels for data exploration visualizations
 [ ] add an example for the ordered pairs benchmark
 [ ] use a table to organize the various model exploration results
 [x] include RMSE to minimize interpretation issues in the Results section
