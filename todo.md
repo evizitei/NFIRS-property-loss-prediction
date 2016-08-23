@@ -58,4 +58,4 @@ input labels and output labels
 [x] add an example for the ordered pairs benchmark
 [x] use a table to organize the various model exploration results
 [x] include RMSE to minimize interpretation issues in the Results section
-[ ] produce new pdf
+[x] produce new pdf
