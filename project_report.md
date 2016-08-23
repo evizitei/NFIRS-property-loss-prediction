@@ -122,6 +122,16 @@ feel of magnitude of error.  Both metrics can be useful for evaluating a model.
 
 ### Data Exploration
 
+Before we dive in to the data itself, a note on it's origins.  I obtained
+only data for 2011 because it's provided free of paperwork from NFIRS
+for being able to start playing with basic models and understanding the
+format.  It is possible to request their entire dataset, but this
+involves some simple authorization and paperwork which seemed
+an obstacle to getting started on the modeling stage.  The gains
+that I would have in model accuracy from having the additional data
+from all years is discussed in the "Improvements" section at the end
+of this report.
+
 The NFIRS data arrives in a set of tables that can be joined together.
 The "basicincident.dbf" file has fields that apply to all incidents,
 and then there are other incident fields which are different per type
