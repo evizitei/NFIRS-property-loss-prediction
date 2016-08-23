@@ -303,6 +303,12 @@ testing the model.  I expect that for any random set of 2 records, the model
 should order their property damage predictions correctly greater than 75% of
 the time (that is, it's more important that the property damage values be in the
 correct order than it is that they be precise with respect to the absolute correct values).
+
+For example, take two random data points, one with a target value of $5000 of damage (A),
+and one with a target value of $10,000 of damage (B).  If the model predicts that
+B will have a higher damage value than A, that is more valuable than whether it
+is off by $1000 or $2000 from the correct target value for each.
+
 I'll be validating this as part of the final model evaluation with 100 random samplings of 2
 records.  It's also more important that records that are farther apart be ordered correctly
 than ones closer together.  Therefore my other expectation is that for every
