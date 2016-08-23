@@ -82,18 +82,41 @@ we can make a reasonable prediction of likely real property loss.
 
 ### Cost function and Validation
 
-To train the algorithm, I'll be using Mean Squared Error as
-the cost function and trying to minimize it to find the regression
-of best fit.  In layman's terms, this is taking the sum of the
+To train the algorithm, I'll be using a couple different metrics
+for evaluating the accuracy of the model.
+
+First is Mean Squared Error; in layman's terms, this is taking the sum of the
 squared differences between each real y value and the predicted y value
 for the current function, divided by the number of elements (the
 average of the squared error in prediction).  This is formally
 written as:
 
-  ![MSE][https://wikimedia.org/api/rest_v1/media/math/render/svg/67b9ac7353c6a2710e35180238efe54faf4d9c15]
+![MSE](images/MeanSquaredError.png)
 
-Questions to ask yourself when writing this section:
+This is useful because it's always positive (due to squaring the difference),
+but it does penalize outliers pretty heavily.  Also it's difficult
+to intuitively link to the target variable because it's in squared units.
+That's why we'll also be looking at the Root of Mean Squared Error.
+This is simply the square root of MSE, which transforms the metric into
+the same units as the variable being examined.
 
+I'll also be using R-Squared, or as some formal texts call it the "Coefficient
+of determination".  In layman's terms this is often described by saying "this
+represents how much of the variation is attributable to the input variable".
+It is calculated by dividing the residual sum of squares by the total sum of squares
+and subtracting this quantity from one:
+
+![MSE](images/R-Squared.png)
+
+Naturally this means that if the model predicts every point perfectly, then it
+will have an r-squared value of 1.0.  Generally 0 is the lower bound when evaluating
+a regression against the points that were regressed, but in cases
+like machine learning where we're scoring it against data it has not seen yet,
+it's possible for r-squared to be arbitrarily bad (and therefore negative).
+
+r-squared is a little easier to digest because of the generally bounded range,
+but RMSE is in the units under consideration and is easier to have an intuitive
+feel of magnitude of error.  Both metrics can be useful for evaluating a model.
 
 ## II. Analysis
 
@@ -241,6 +264,7 @@ against the test set, the Dummy learner performed as follows:
 ```
 Mean Absolute Error:   1.56
 Mean Squared Error:    4.44
+RMSE:                  2.11
 Median Absolute Error: 1.39
 R - Squared:          -3.33
 ```
@@ -255,6 +279,7 @@ same approach as the dummy (train against the training set, score
 ```
 Mean Absolute Error:   1.22
 Mean Squared Error:    2.90
+RMSE:                  1.70
 Median Absolute Error: 0.94
 R - Squared:           0.35
 ```
@@ -564,15 +589,15 @@ in the test/train split.
 After the data preprocessing there were about 30,000 records reserved to use
 once training was fully complete to validate the model against data it
 had never seen before (even in test sets).  The plan was to compare r^2 scores and
-MSE (Mean Squared Error) between the results obtained in the model selection
+MSE (Mean Squared Error)/RMSE between the results obtained in the model selection
 and tuning passes and confirm that they weren't a result of overfitting.
 
 In model selection the Gradient Boost model with no tuning turned up
 a Mean Squared Error of 1.634.  This is difficult to put in context because
 it's the squared difference between two logarithmically transformed values.
 For comparison, the dummy (random) regression model produced an MSE of
-4.436, and the naive linear regression scored an MSE of 2.895.  Looking at R^2
-values, they're similarly ordered.  Dummy: -3.334, Linear: 0.347,
+4.436 (RMSE 2.106), and the naive linear regression scored an MSE of 2.895 (RMSE 1.701).
+Looking at R^2 values, they're similarly ordered.  Dummy: -3.334, Linear: 0.347,
 GradientBoost: 0.634.  In both metrics you can see that gradient boost gives
 meaningful (non-random) information, and performs better than a naive model.
 
@@ -582,10 +607,10 @@ according to r^2).
 
 The first question is whether that has been overfit to the training/test data or not.
 In the model evaluation work done in the "ModelValidation" notebook, I found
-a Mean Squared Error of 1.431 and an R^2 score of 0.677.  This would appear to indicate
-both that tuning _was_ meaningful (MSE has come down) and that the model
-generalizes well to unseen data (MSE and R^2 both are pretty close to original
-  values, better in fact).
+a Mean Squared Error of 1.431 (RMSE 1.196) and an R^2 score of 0.677.
+This would appear to indicate both that tuning _was_ meaningful (MSE has come down)
+and that the model generalizes well to unseen data (MSE and R^2
+both are pretty close to original values, better in fact).
 
 Next we want to ask whether the model is robust to small changes in inputs.
 Most of the input data is categorical, so it's hard to decide what "small"

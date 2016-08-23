@@ -47,3 +47,14 @@ prediction value
 [x]  compare un-logrithm'd
 input labels and output labels
 [x] produce a pdf report
+
+### Post Review Round 1
+
+[x] Include RMSE in metrics section (and calculate throughout model justification)
+[x] Define R-squared metric in the metrics section
+[x] include a MSE equation directly in the project report
+[ ] clarify why only 2011 data was included in the data exploration section
+[ ] add axes labels for data exploration visualizations
+[ ] add an example for the ordered pairs benchmark
+[ ] use a table to organize the various model exploration results
+[x] include RMSE to minimize interpretation issues in the Results section
