@@ -485,26 +485,28 @@ I've included only r-squared scores here to keep the summary concise (other
   fit-scoring function outputs for each model can be seen in the notebook including
   Mean Squared Error, Mean Absolute Error, and Median Absolute Error).
 
-| Model             | r-squared score    |
-|___________________|____________________|
-| Dummy             | -3.33379834123e-05 |
-| Linear            |  0.347285517809    |
-| Ridge             |  0.34736410869     |
-| Lasso             |  0.154652051569    |
-| ElasticNet        |  0.162604152044    |
-| SGD               |  0.346010609807    |
-| Bayseian          |  0.347298315639    |
-| PassiveAggressive | -0.217769372351    |
-| RANSAC            | -7.74110759857     |
-| TheilSen          |  0.281932204654    |
-| DecisionTree      |  0.416033472511    |
-| ExtraTree         |  0.26054278424     |
-| SVM               |  0.334870023831    |
-| AdaBoost          |  0.407018865231    |
-| Bagging           |  0.594127375415    |
-| ExtraTreesEnsemble|  0.511182041209    |
-| GradientBoost     |  0.63351895371     |
-| RandomForest      |  0.618601161064    |
+```
+| Model             | r-squared score    | MSE   | RMSE  |
+|___________________|____________________|_______|_______|
+| Dummy             | -3.33379834123e-05 | 4.436 | 2.106 |
+| Linear            |  0.347285517809    | 2.895 | 1.701 |
+| Ridge             |  0.34736410869     | 2.895 | 1.701 |
+| Lasso             |  0.154652051569    | 3.750 | 1.936 |
+| ElasticNet        |  0.162604152044    | 3.714 | 1.927 |
+| SGD               |  0.346010609807    | 2.901 | 1.703 |
+| Bayseian          |  0.347298315639    | 2.895 | 1.701 |
+| PassiveAggressive | -0.217769372351    | 5.402 | 2.324 |
+| RANSAC            | -7.74110759857     |38.775 | 6.227 |
+| TheilSen          |  0.281932204654    | 3.185 | 1.784 |
+| DecisionTree      |  0.416033472511    | 2.590 | 1.609 |
+| ExtraTree         |  0.26054278424     | 3.280 | 1.811 |
+| SVM               |  0.334870023831    | 2.950 | 1.718 |
+| AdaBoost          |  0.407018865231    | 2.630 | 1.622 |
+| Bagging           |  0.594127375415    | 1.800 | 1.341 |
+| ExtraTreesEnsemble|  0.511182041209    | 2.168 | 1.472 |
+| GradientBoost     |  0.63351895371     | 1.626 | 1.275 |
+| RandomForest      |  0.618601161064    | 1.692 | 1.301 |
+```
 
 Something to point out here is that the first time I went through this exercise
 the scores were much lower, with the top r-squared score not being above 0.5.

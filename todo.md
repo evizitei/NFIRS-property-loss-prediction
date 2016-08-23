@@ -56,5 +56,6 @@ input labels and output labels
 [x] clarify why only 2011 data was included in the data exploration section
 [x] add axes labels for data exploration visualizations
 [x] add an example for the ordered pairs benchmark
-[ ] use a table to organize the various model exploration results
+[x] use a table to organize the various model exploration results
 [x] include RMSE to minimize interpretation issues in the Results section
+[ ] produce new pdf
